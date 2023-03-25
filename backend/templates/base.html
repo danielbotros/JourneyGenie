@@ -7,33 +7,38 @@
 <body>
     <div class="full-body-container">
         <div class="top-text">
-            <div class="google-colors">
-                <h1 id="google-c">C</h1>
-                <h1 id="google-s">S</h1>
-                <h1 id="google-4">4</h1>
-                <h1 id="google-3">3</h1>
-                <h1 id="google-0-1">0</h1>
-                <h1 id="google-0-2">0</h1>
-            </div>
-            <div class="input-box" onclick="sendFocus()">
-                <img src="{{ url_for('static', filename='images/mag.png') }}" />
-                <input placeholder="Search for a Keeping up with the Kardashians episode" id="filter-text-val" onkeyup="filterText()">
-            </div>
+            <h1>Find your Perfect Pup!</h1>
         </div>
+        <h2>How many hours do you have?</h2>
+        <div class="option">
+            Hours
+            <div class="slidecontainer">
+                <input type="range" min="0" max="2" value="1" class="slider" id="hours_slider"
+                    onchange="updateHours(this.value);">
+                <output id="hours">1</output>
+            </div>
+        <!-- <h2>How much space do you have?</h2> -->
         <div id="answer-box">
 
         </div>
     </div>
 
     <script>
-
-        function answerBoxTemplate(title,titleDesc){
+        var hoursvalue = document.getElementById("hours").value;
+        function updateHours(hours) {
+            document.getElementById('hours').value=hours;
+            hourvalue = hours;
+        }        
+        
+        function answerBoxTemplate(title, breed_name, trainability_value, energy_level_value, grooming_frequency_value){
             return `<div class=''>
                 <h3 class='episode-title'>${title}</h3>
-                <p class='episode-desc'>${titleDesc}</p>
+                <h3 class='episode-title'>${breed_name}</h3>
+                <p class='episode-desc'>${trainability_value}</p>
             </div>`
         }
-
+        // <p class='episode-desc'>${energy_level_value}</p>
+        //         <p class='episode-desc'>${grooming_frequency_value}</p>
         function sendFocus(){
             document.getElementById('filter-text-val').focus()
         }
@@ -46,7 +51,7 @@
             .then((data) => data.forEach(row => {
                 
                 let tempDiv = document.createElement("div")
-                tempDiv.innerHTML = answerBoxTemplate(row.title,row.descr)
+                tempDiv.innerHTML = answerBoxTemplate(row.breed_name,row.trainability_value)
                 document.getElementById("answer-box").appendChild(tempDiv)
             }));
 
