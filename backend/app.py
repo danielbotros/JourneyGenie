@@ -12,7 +12,7 @@ os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..", os.curdir))
 # Don't worry about the deployment credentials, those are fixed
 # You can use a different DB name if you want to
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = ""
+MYSQL_USER_PASSWORD = "dirtbikesock146"
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "breeds"
 
@@ -43,16 +43,33 @@ def home():
 
 @app.route("/episodes")
 def episodes_search():
-    text = request.args.get("title")
+    print("request: ", request)
+    text = request.args.get("hours")
     return time_commitment(text)
 
 
 def time_commitment(hours):
-    hours = 1
+
     print(hours)
-    query_sql = f"""SELECT breed_name FROM breeds WHERE trainability_value <= {hours} limit 10"""
+    query_sql = f"""SELECT * FROM breeds WHERE trainability_value <= {hours} limit 10"""
     data = mysql_engine.query_selector(query_sql)
     keys = ["breed_name", "trainability_value"]
+    # keys = ["breed_name", "descript", "temperament", "popularity", "min_height", "max_height",
+    #         "min_weight",
+    #         "max_weight",
+    #         "min_expectancy",
+    #         "max_expectancy",
+    #         "dog_group",
+    #         "grooming_frequency_value",
+    #         "grooming_frequency_category",
+    #         "shedding_value",
+    #         "shedding_category",
+    #         "energy_level_value",
+    #         "energy_level_category",
+    #         "trainability_value",
+    #         "trainability_category",
+    #         "demeanor_value",
+    #         "demeanor_category"]
     # keys = ["breed_name", "trainability_value",
     #         "energy_level_value", "grooming_frequency_value"]
     print(data)

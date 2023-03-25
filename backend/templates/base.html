@@ -13,9 +13,9 @@
         <div class="option">
             Hours
             <div class="slidecontainer">
-                <input type="range" min="0" max="2" value="1" class="slider" id="hours_slider"
+                <input type="range" min="0" max="1" step="0.1" value="0.5" class="slider" id="hours_slider"
                     onchange="updateHours(this.value);">
-                <output id="hours">1</output>
+                <output id="hours">0.5</output>
             </div>
         <!-- <h2>How much space do you have?</h2> -->
         <div id="answer-box">
@@ -28,11 +28,11 @@
         function updateHours(hours) {
             document.getElementById('hours').value=hours;
             hourvalue = hours;
+            filterText()
         }        
         
-        function answerBoxTemplate(title, breed_name, trainability_value, energy_level_value, grooming_frequency_value){
+        function answerBoxTemplate(breed_name, trainability_value){
             return `<div class=''>
-                <h3 class='episode-title'>${title}</h3>
                 <h3 class='episode-title'>${breed_name}</h3>
                 <p class='episode-desc'>${trainability_value}</p>
             </div>`
@@ -40,16 +40,15 @@
         // <p class='episode-desc'>${energy_level_value}</p>
         //         <p class='episode-desc'>${grooming_frequency_value}</p>
         function sendFocus(){
-            document.getElementById('filter-text-val').focus()
+            document.getElementById('hours_slider').focus()
         }
 
         function filterText(){
             document.getElementById("answer-box").innerHTML = ""
-            console.log(document.getElementById("filter-text-val").value)
-            fetch("/episodes?" + new URLSearchParams({ title: document.getElementById("filter-text-val").value }).toString())
+            console.log(document.getElementById("hours_slider").value)
+            fetch("/episodes?" + new URLSearchParams({ hours: document.getElementById("hours_slider").value }).toString())
             .then((response) => response.json())
             .then((data) => data.forEach(row => {
-                
                 let tempDiv = document.createElement("div")
                 tempDiv.innerHTML = answerBoxTemplate(row.breed_name,row.trainability_value)
                 document.getElementById("answer-box").appendChild(tempDiv)
