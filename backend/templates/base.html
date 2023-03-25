@@ -17,36 +17,63 @@
                     onchange="updateHours(this.value);">
                 <output id="hours">0.5</output>
             </div>
-        <!-- <h2>How much space do you have?</h2> -->
-        <div id="answer-box">
+        <h2>How much space do you have?</h2>
+        <div class="dropdown">
+            <label for="space">Space: </label>
+                <select name="space" id="space_select" onchange="updateSpace(this.value);">
+                    <option value="Small">Small</option>
+                    <option value="Medium">Medium</option>
+                    <option value="Large">Large</option>
+                </select>
+                <output id="space">Small</output>
 
+            </div>
+
+        <div id="answer-box">
         </div>
     </div>
 
     <script>
         var hoursvalue = document.getElementById("hours").value;
+        var spacevalue = document.getElementById("space").value;
         function updateHours(hours) {
             document.getElementById('hours').value=hours;
             hourvalue = hours;
             filterText()
-        }        
+        }   
+        function updateSpace(space) {
+            document.getElementById('space').value=space;
+            spacevalue = space;
+            filterText()
+        }       
         
         function answerBoxTemplate(breed_name, trainability_value){
             return `<div class=''>
-                <h3 class='episode-title'>${breed_name}</h3>
-                <p class='episode-desc'>Trainability Score: ${trainability_value}</p>
+                <h3 class='breed-name'>${breed_name}</h3>
+                <p class='breed-trainabilityc'>Trainability Score: ${trainability_value}</p>
             </div>`
         }
         // <p class='episode-desc'>${energy_level_value}</p>
         //         <p class='episode-desc'>${grooming_frequency_value}</p>
         function sendFocus(){
             document.getElementById('hours_slider').focus()
+            document.getElementById('space_select').focus()
         }
 
         function filterText(){
             document.getElementById("answer-box").innerHTML = ""
-            console.log(document.getElementById("hours_slider").value)
-            fetch("/episodes?" + new URLSearchParams({ hours: document.getElementById("hours_slider").value }).toString())
+            console.log("hours: " , document.getElementById("hours_slider").value)
+            console.log("space: ", document.getElementById("space_select").value)
+            // const p = new URLSearchParams();
+            // p.append(hours,  document.getElementById("hours_slider").value);
+            // p.append(space,  document.getElementById("space_select").value);
+            // console.log(p);
+            //fetch("/episodes?" + new URLSearchParams({ hours: document.getElementById("hours_slider").value }, {space: document.getElementById("space_select").value}).toString())
+            fetch("/episodes?" + 
+                new URLSearchParams({ 
+                    hours: document.getElementById("hours_slider").value, 
+                    space: document.getElementById("space_select").value, 
+                }))
             .then((response) => response.json())
             .then((data) => data.forEach(row => {
                 let tempDiv = document.createElement("div")
