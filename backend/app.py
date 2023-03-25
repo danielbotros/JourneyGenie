@@ -51,7 +51,7 @@ def episodes_search():
 def time_commitment(hours):
 
     print(hours)
-    query_sql = f"""SELECT * FROM breeds WHERE trainability_value <= {hours} limit 10"""
+    query_sql = f"""SELECT breed_name, trainability_value FROM breeds WHERE trainability_value <= {hours} limit 10"""
     data = mysql_engine.query_selector(query_sql)
     keys = ["breed_name", "trainability_value"]
     # keys = ["breed_name", "descript", "temperament", "popularity", "min_height", "max_height",
