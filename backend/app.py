@@ -12,7 +12,7 @@ os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..", os.curdir))
 # Don't worry about the deployment credentials, those are fixed
 # You can use a different DB name if you want to
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = ""
+MYSQL_USER_PASSWORD = "perfectpup_4300!"
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "breeds"
 
@@ -41,17 +41,23 @@ def home():
     return render_template('base.html', title="sample html")
 
 
-@app.route("/episodes")
+@app.route("/perfectpupper")
 def episodes_search():
     print("request: ", request)
-    text = request.args.get("hours")
-    return time_commitment(text)
+    hours = request.args.get("hours")
+    space = request.args.get("space")
+    return time_commitment(hours, space)
 
 
-def time_commitment(hours):
+def time_commitment(hours, space):
 
     print(hours)
-    query_sql = f"""SELECT breed_name, trainability_value FROM breeds WHERE trainability_value <= {hours} limit 10"""
+    size = space_commitment(space)  # change this later
+    print("size: ", size)
+    query_sql = f"""SELECT breed_name, trainability_value 
+    FROM breeds 
+    WHERE trainability_value <= {hours} AND max_height <= {size*10}
+    limit 10"""
     data = mysql_engine.query_selector(query_sql)
     keys = ["breed_name", "trainability_value"]
     # keys = ["breed_name", "descript", "temperament", "popularity", "min_height", "max_height",
