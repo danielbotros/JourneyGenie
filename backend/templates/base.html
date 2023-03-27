@@ -158,17 +158,17 @@
     function answerBoxTemplate(
       breed_name,
       trainability_value,
+      weight,
       description,
       traits,
-      height
     ) {
       return `
         <div class="block">
             <h3 class='breed-name'>${breed_name}</h3>
                 <p class='breed-trainabilityc'>Trainability Score: ${trainability_value}</p>
-                <p class='breed-traits'>Height: ${size}</p>
-                <p class='breed-traits'>Traits: ${traits}</p>
-                <p class='breed-traits'>${description}</p>
+                <p class='breed-traits'>Weight ${Math.round(weight, 2)} lbs</p>
+                <p class='breed-traits'>Personality Traits: ${traits}</p>
+                <p class='breed-traits'>Description: ${description}</p>
             </div>
             `;
     }
@@ -207,13 +207,14 @@
         .then((response) => response.json())
         .then((data) =>
           data.forEach((row) => {
+            console.log("row: ", row);
             let tempDiv = document.createElement("div");
             tempDiv.innerHTML = answerBoxTemplate(
-              row.breed_name,
-              row.trainability_value,
-              row.height,
-              row.descript,
-              row.temperament
+              breed_name =row.breed_name,
+              trainability_value = row.trainability_value,
+              weight = row.max_weight,
+              description = row.descript,
+              traits = row.temperament,
             );
             document.getElementById("answer-box").appendChild(tempDiv);
           })

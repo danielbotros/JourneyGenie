@@ -12,7 +12,7 @@ os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..", os.curdir))
 # Don't worry about the deployment credentials, those are fixed
 # You can use a different DB name if you want to
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = "admin123"
+MYSQL_USER_PASSWORD = ""
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "dogdb"
 
@@ -60,7 +60,7 @@ def time_commitment(hours, space, trait1, trait2, trait3):
     print("trait1: ",  trait1)
     print("trait2: ",  trait2)
     print("trait3: ",  trait3)
-    query_sql = f"""SELECT breed_name, trainability_value, descript, temperament 
+    query_sql = f"""SELECT breed_name, trainability_value, descript, temperament, max_weight 
     FROM breeds 
     WHERE trainability_value <= {hours} 
     AND min_weight >= {size*10 - 20} AND min_weight <= {size*10} 
@@ -69,7 +69,8 @@ def time_commitment(hours, space, trait1, trait2, trait3):
     OR temperament LIKE '%%{trait3}%%')
     limit 10"""
     data = mysql_engine.query_selector(query_sql)
-    keys = ["breed_name", "trainability_value", "descript", "temperament"]
+    keys = ["breed_name", "trainability_value",
+            "descript", "temperament", "max_weight"]
     # keys = ["breed_name", "descript", "temperament", "popularity", "min_height", "max_height",
     #         "min_weight",
     #         "max_weight",
