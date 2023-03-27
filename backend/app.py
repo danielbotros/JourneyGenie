@@ -71,7 +71,7 @@ def time_commitment(hours, space, trait1, trait2, trait3):
     # keys = ["breed_name", "descript", "temperament", "popularity", "min_height", "max_height",
     #         "min_weight",
     #         "max_weight",
-    #         "min_expectancy",
+    #         "min_expectancy", 
     #         "max_expectancy",
     #         "dog_group",
     #         "grooming_frequency_value",
