@@ -14,7 +14,7 @@ os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..", os.curdir))
 MYSQL_USER = "root"
 MYSQL_USER_PASSWORD = ""
 MYSQL_PORT = 3306
-MYSQL_DATABASE = "breeds"
+MYSQL_DATABASE = "dogdb"
 
 mysql_engine = MySQLDatabaseHandler(
     MYSQL_USER, MYSQL_USER_PASSWORD, MYSQL_PORT, MYSQL_DATABASE)
@@ -103,4 +103,4 @@ def space_commitment(size):
     return size
 
 
-app.run(debug=True)
+# app.run(debug=True)

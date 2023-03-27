@@ -81,7 +81,7 @@
           <output id="trait3">None Selected</output>
         </div>
 
-        <h2>How many hours do you have?</h2>
+        <h2>How many hours do you have to train?</h2>
         <div class="option">
           Hours
           <div class="slidecontainer">
@@ -159,12 +159,14 @@
       breed_name,
       trainability_value,
       description,
-      traits
+      traits,
+      height
     ) {
       return `
         <div class="block">
             <h3 class='breed-name'>${breed_name}</h3>
                 <p class='breed-trainabilityc'>Trainability Score: ${trainability_value}</p>
+                <p class='breed-traits'>Height: ${size}</p>
                 <p class='breed-traits'>Traits: ${traits}</p>
                 <p class='breed-traits'>${description}</p>
             </div>
@@ -209,6 +211,7 @@
             tempDiv.innerHTML = answerBoxTemplate(
               row.breed_name,
               row.trainability_value,
+              row.height,
               row.descript,
               row.temperament
             );
