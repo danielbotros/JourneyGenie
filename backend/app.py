@@ -12,7 +12,7 @@ os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..", os.curdir))
 # Don't worry about the deployment credentials, those are fixed
 # You can use a different DB name if you want to
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = ""
+MYSQL_USER_PASSWORD = "admin123"
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "breeds"
 
@@ -53,6 +53,7 @@ def episodes_search():
 
 
 def time_commitment(hours, space, trait1, trait2, trait3):
+    # the scale of this needs to be changed because it doesn't work for inputs < .3
     print("hours: ",  hours)
     size = space_commitment(space)  # change this later
     print("size: ", size)
@@ -62,7 +63,7 @@ def time_commitment(hours, space, trait1, trait2, trait3):
     query_sql = f"""SELECT breed_name, trainability_value, descript, temperament 
     FROM breeds 
     WHERE trainability_value <= {hours} 
-    AND max_height <= {size*10} 
+    AND min_weight >= {size*10 - 20} AND min_weight <= {size*10} 
     AND (temperament LIKE '%%{trait1}%%' 
     OR temperament LIKE '%%{trait2}%%' 
     OR temperament LIKE '%%{trait3}%%')
