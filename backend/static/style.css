@@ -1,17 +1,25 @@
 body{
-    font-family: Arial;
+    font-family: Monaco;
     margin-left: 100px;
-}
+    margin-right:100px;
+ }
+ #answer-box p{
+    font-size:.9em;
+    font-family:Georgia, 'Times New Roman', Times, serif
+ }
 .row{
     display: flex;
     flex-direction: row;
+    justify-content: space-between;
 }
-h1{
-    text-align: center;
+.col{
+    display: flex;
+    flex-direction: column;
+    width:550px;
 }
-.google-colors h1{
-    margin-bottom: 0;
-    margin-right: 3px;
+#bigdog {
+    margin-bottom:0px;
+    font-size: 80px;
 }
 
 .input-box{
@@ -44,10 +52,15 @@ h1{
 }
 
 #answer-box{
-    width: 700px;
-    margin-top:50px; 
+    margin-top: 50px;
+    display:flex;
+    flex-direction: row;
+    flex-wrap: wrap;
 }
-
+.block{
+    width:350px;
+    padding: 20px;
+}
 .breed{
     font-family: 'Kanit', sans-serif;
 }

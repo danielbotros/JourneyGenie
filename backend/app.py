@@ -35,6 +35,7 @@ CORS(app)
 #     data = mysql_engine.query_selector(query_sql)
 #     return json.dumps([dict(zip(keys,i)) for i in data])
 
+
 @app.route("/")
 def home():
     return render_template('base.html', title="sample html")
@@ -71,7 +72,7 @@ def time_commitment(hours, space, trait1, trait2, trait3):
     # keys = ["breed_name", "descript", "temperament", "popularity", "min_height", "max_height",
     #         "min_weight",
     #         "max_weight",
-    #         "min_expectancy", 
+    #         "min_expectancy",
     #         "max_expectancy",
     #         "dog_group",
     #         "grooming_frequency_value",
