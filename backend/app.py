@@ -12,7 +12,7 @@ os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..", os.curdir))
 # Don't worry about the deployment credentials, those are fixed
 # You can use a different DB name if you want to
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = "perfectpup_4300!"
+MYSQL_USER_PASSWORD = ""
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "breeds"
 
@@ -35,7 +35,6 @@ CORS(app)
 #     data = mysql_engine.query_selector(query_sql)
 #     return json.dumps([dict(zip(keys,i)) for i in data])
 
-
 @app.route("/")
 def home():
     return render_template('base.html', title="sample html")
@@ -46,20 +45,29 @@ def episodes_search():
     print("request: ", request)
     hours = request.args.get("hours")
     space = request.args.get("space")
-    return time_commitment(hours, space)
+    trait1 = request.args.get("trait1")
+    trait2 = request.args.get("trait2")
+    trait3 = request.args.get("trait3")
+    return time_commitment(hours, space, trait1, trait2, trait3)
 
 
-def time_commitment(hours, space):
-
-    print(hours)
+def time_commitment(hours, space, trait1, trait2, trait3):
+    print("hours: ",  hours)
     size = space_commitment(space)  # change this later
     print("size: ", size)
-    query_sql = f"""SELECT breed_name, trainability_value 
+    print("trait1: ",  trait1)
+    print("trait2: ",  trait2)
+    print("trait3: ",  trait3)
+    query_sql = f"""SELECT breed_name, trainability_value, descript, temperament 
     FROM breeds 
-    WHERE trainability_value <= {hours} AND max_height <= {size*10}
+    WHERE trainability_value <= {hours} 
+    AND max_height <= {size*10} 
+    AND (temperament LIKE '%%{trait1}%%' 
+    OR temperament LIKE '%%{trait2}%%' 
+    OR temperament LIKE '%%{trait3}%%')
     limit 10"""
     data = mysql_engine.query_selector(query_sql)
-    keys = ["breed_name", "trainability_value"]
+    keys = ["breed_name", "trainability_value", "descript", "temperament"]
     # keys = ["breed_name", "descript", "temperament", "popularity", "min_height", "max_height",
     #         "min_weight",
     #         "max_weight",
