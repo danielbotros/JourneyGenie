@@ -3,12 +3,66 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Kanit&family=Montserrat&family=Open+Sans:wght@500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Kanit&family=Montserrat&family=Open+Sans:wght@500&display=swap"
+    rel="stylesheet">
+
 <body>
     <div class="full-body-container">
         <div class="top-text">
             <h1>Find your Perfect Pup!</h1>
         </div>
+
+        <h2>What personality traits do you value about a dog?</h2>
+        <div class="dropdown">
+            <label for="trait1">Personality 1: </label>
+            <select name="trait1" id="trait1_select" onchange="updateTrait1(this.value);">
+                <option value="Independent" selected>Independent</option>
+                <option value="Playful">Playful</option>
+                <option value="Affectionate">Affectionate</option>
+                <option value="Friendly">Friendly</option>
+                <option value="Intelligent">Intelligent</option>
+                <option value="Loyal">Loyal</option>
+                <option value="Active">Active</option>
+                <option value="Smart">Smart</option>
+                <option value="Outgoing">Outgoing</option>
+            </select>
+            <output id="trait1">Independent</output>
+        </div>
+
+
+        <div class="dropdown">
+            <label for="trait2">Personality 2: </label>
+            <select name="trait2" id="trait2_select" onchange="updateTrait2(this.value);">
+                <option value="Independent">Independent</option>
+                <option value="Playful" selected>Playful</option>
+                <option value="Affectionate">Affectionate</option>
+                <option value="Friendly">Friendly</option>
+                <option value="Intelligent">Intelligent</option>
+                <option value="Loyal">Loyal</option>
+                <option value="Active">Active</option>
+                <option value="Smart">Smart</option>
+                <option value="Outgoing">Outgoing</option>
+            </select>
+            <output id="trait2">Playful</output>
+        </div>
+
+        <div class="dropdown">
+            <label for="trait1">Personality 3: </label>
+            <select name="trait3" id="trait3_select" onchange="updateTrait3(this.value);">
+                <option value="Independent">Independent</option>
+                <option value="Playful">Playful</option>
+                <option value="Affectionate" selected>Affectionate</option>
+                <option value="Friendly">Friendly</option>
+                <option value="Intelligent">Intelligent</option>
+                <option value="Loyal">Loyal</option>
+                <option value="Active">Active</option>
+                <option value="Smart">Smart</option>
+                <option value="Outgoing">Outgoing</option>
+            </select>
+            <output id="trait3">Affectionate</output>
+        </div>
+
+
         <h2>How many hours do you have?</h2>
         <div class="option">
             Hours
@@ -17,71 +71,104 @@
                     onchange="updateHours(this.value);">
                 <output id="hours">0.5</output>
             </div>
-        <h2>How much space do you have?</h2>
-        <div class="dropdown">
-            <label for="space">Space: </label>
+
+
+            <h2>How much space do you have?</h2>
+            <div class="dropdown">
+                <label for="space">Space: </label>
                 <select name="space" id="space_select" onchange="updateSpace(this.value);">
                     <option value="Small">Small</option>
                     <option value="Medium">Medium</option>
                     <option value="Large">Large</option>
                 </select>
                 <output id="space">Small</output>
-
             </div>
-
-        <div id="answer-box">
+            <div id="answer-box">
+            </div>
         </div>
-    </div>
 
-    <script>
-        var hoursvalue = document.getElementById("hours").value;
-        var spacevalue = document.getElementById("space").value;
-        function updateHours(hours) {
-            document.getElementById('hours').value=hours;
-            hourvalue = hours;
-            filterText()
-        }   
-        function updateSpace(space) {
-            document.getElementById('space').value=space;
-            spacevalue = space;
-            filterText()
-        }       
-        
-        function answerBoxTemplate(breed_name, trainability_value){
-            return `<div class=''>
+        <script>
+            var hoursvalue = document.getElementById("hours").value;
+            var spacevalue = document.getElementById("space").value;
+            var trait1value = document.getElementById("trait1").value;
+            var trait2value = document.getElementById("trait2").value;
+            var trait3value = document.getElementById("trait3").value;
+
+            function updateHours(hours) {
+                document.getElementById('hours').value = hours;
+                hourvalue = hours;
+                filterText()
+            }
+
+            function updateSpace(space) {
+                document.getElementById('space').value = space;
+                spacevalue = space;
+                filterText()
+            }
+
+            function updateTrait1(trait1) {
+                document.getElementById('trait1').value = trait1;
+                trait1value = trait1;
+                filterText()
+            }
+
+            function updateTrait2(trait2) {
+                document.getElementById('trait2').value = trait2;
+                trait2value = trait2;
+                filterText()
+            }
+
+            function updateTrait3(trait3) {
+                document.getElementById('trait3').value = trait3;
+                trait3value = trait3;
+                filterText()
+            }
+
+            function answerBoxTemplate(breed_name, trainability_value, description, traits) {
+                return `<div class=''>
                 <h3 class='breed-name'>${breed_name}</h3>
                 <p class='breed-trainabilityc'>Trainability Score: ${trainability_value}</p>
+                <p class='breed-traits'>${description}</p>
+                <p class='breed-traits'>Traits: ${traits}</p>
             </div>`
-        }
-        // <p class='episode-desc'>${energy_level_value}</p>
-        //         <p class='episode-desc'>${grooming_frequency_value}</p>
-        function sendFocus(){
-            document.getElementById('hours_slider').focus()
-            document.getElementById('space_select').focus()
-        }
+            }
+            // <p class='episode-desc'>${energy_level_value}</p>
+            //         <p class='episode-desc'>${grooming_frequency_value}</p>
+            function sendFocus() {
+                document.getElementById('hours_slider').focus()
+                document.getElementById('space_select').focus()
+                document.getElementById('trait1_select').focus()
+                document.getElementById('trait2_select').focus()
+                document.getElementById('trait3_select').focus()
+            }
 
-        function filterText(){
-            document.getElementById("answer-box").innerHTML = ""
-            console.log("hours: " , document.getElementById("hours_slider").value)
-            console.log("space: ", document.getElementById("space_select").value)
-            // const p = new URLSearchParams();
-            // p.append(hours,  document.getElementById("hours_slider").value);
-            // p.append(space,  document.getElementById("space_select").value);
-            // console.log(p);
-            //fetch("/episodes?" + new URLSearchParams({ hours: document.getElementById("hours_slider").value }, {space: document.getElementById("space_select").value}).toString())
-            fetch("/perfectpupper?" + 
-                new URLSearchParams({ 
-                    hours: document.getElementById("hours_slider").value, 
-                    space: document.getElementById("space_select").value, 
-                }))
-            .then((response) => response.json())
-            .then((data) => data.forEach(row => {
-                let tempDiv = document.createElement("div")
-                tempDiv.innerHTML = answerBoxTemplate(row.breed_name,row.trainability_value)
-                document.getElementById("answer-box").appendChild(tempDiv)
-            }));
+            function filterText() {
+                document.getElementById("answer-box").innerHTML = ""
+                console.log("hours: ", document.getElementById("hours_slider").value)
+                console.log("space: ", document.getElementById("space_select").value)
+                console.log("trait1: ", document.getElementById("trait1_select").value)
+                console.log("trait2: ", document.getElementById("trait2_select").value)
+                console.log("trait3: ", document.getElementById("trait3_select").value)
+                // const p = new URLSearchParams();
+                // p.append(hours,  document.getElementById("hours_slider").value);
+                // p.append(space,  document.getElementById("space_select").value);
+                // console.log(p);
+                //fetch("/episodes?" + new URLSearchParams({ hours: document.getElementById("hours_slider").value }, {space: document.getElementById("space_select").value}).toString())
+                fetch("/perfectpupper?" +
+                    new URLSearchParams({
+                        hours: document.getElementById("hours_slider").value,
+                        space: document.getElementById("space_select").value,
+                        trait1: document.getElementById("trait1_select").value,
+                        trait2: document.getElementById("trait2_select").value,
+                        trait3: document.getElementById("trait3_select").value
+                    }))
+                    .then((response) => response.json())
+                    .then((data) => data.forEach(row => {
+                        let tempDiv = document.createElement("div")
+                        tempDiv.innerHTML = answerBoxTemplate(row.breed_name, row.trainability_value, row.descript, row.temperament)
+                        document.getElementById("answer-box").appendChild(tempDiv)
+                    }));
+            }
 
-        }
-            
-    </script>
+        </script>
 </body>
