@@ -55,14 +55,14 @@ def episodes_search():
 def time_commitment(hours, space, trait1, trait2, trait3):
     # the scale of this needs to be changed because it doesn't work for inputs < .3
     print("hours: ",  hours)
-    size = space_commitment(space)  # change this later
+    size = space_commitment(space)  # change this later, KILOGRAMS
     print("size: ", size)
     print("trait1: ",  trait1)
     print("trait2: ",  trait2)
     print("trait3: ",  trait3)
     query_sql = f"""SELECT breed_name, trainability_value, descript, temperament, max_weight 
     FROM breeds 
-    WHERE trainability_value <= {hours} 
+    WHERE trainability_value >= {hours} 
     AND min_weight >= {size*10 - 20} AND min_weight <= {size*10} 
     AND (temperament LIKE '%%{trait1}%%' 
     OR temperament LIKE '%%{trait2}%%' 
