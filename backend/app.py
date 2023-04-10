@@ -14,7 +14,7 @@ os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..", os.curdir))
 # Don't worry about the deployment credentials, those are fixed
 # You can use a different DB name if you want to
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = "admin123"
+MYSQL_USER_PASSWORD = "perfectpup_4300!"
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "dogdb"
 
@@ -46,6 +46,8 @@ def home():
 def dog_search():
     print("request: ", request)
     print(preprocess()[0])
+    cleaned_data = preprocess()
+    print("inv_inde:", inv_idx(cleaned_data))
     hours = request.args.get("hours")
     space = request.args.get("space")
     trait1 = request.args.get("trait1")
@@ -126,6 +128,23 @@ def preprocess():
         breed_data = [item for sublist in breed_data for item in sublist]
         cleaned_data.append(breed_data)
     return cleaned_data
+
+
+def inv_idx(cleaned_data):
+    inv_index = {}
+    for i, data in enumerate(cleaned_data):
+        tf = {}
+        for tok in data:
+            if tok in tf:
+                tf[tok] += 1
+            else:
+                tf[tok] = 1
+        for t, count in tf.items():
+            if t not in inv_index:
+                inv_index[t] = [(i, count)]
+            else:
+                inv_index[t].append((i, count))
+    return inv_index
 
 
 app.run(debug=True)
