@@ -18,6 +18,7 @@ MYSQL_USER = "root"
 MYSQL_USER_PASSWORD = "perfectpup_4300!"
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "dogdb"
+INDEX_TO_BREED = {}
 
 mysql_engine = MySQLDatabaseHandler(
     MYSQL_USER, MYSQL_USER_PASSWORD, MYSQL_PORT, MYSQL_DATABASE)
@@ -113,6 +114,14 @@ def space_commitment(size):
     return size
 
 
+def index_to_breed():
+
+    query_sql = f"""SELECT breed FROM breeds"""
+    breeds = mysql_engine.query_selector(query_sql)
+    for i, breed in enumerate(breeds):
+        INDEX_TO_BREED[i] = breed
+
+
 def tokenize(text):
     if text != None:
         return [x for x in re.findall(r"[a-z]+", text.lower())]
@@ -176,6 +185,48 @@ def compute_doc_norms(index, idf, n_docs):
                 norms[d] += (tf * idf_value) ** 2
     norms = np.sqrt(norms)
     return norms
+
+# implement term at a time score accumulation
+
+
+def accumulate_dot_scores(query_word_counts, index, idf):
+    doc_scores = {}
+    for term, lis in index.items():
+        if term in query_word_counts and term in idf:
+            for (d, tf) in lis:
+                if d in doc_scores:
+                    doc_scores[d] += (tf * (idf[term]**2) *
+                                      query_word_counts[term])
+                else:
+                    doc_scores[d] = (tf * (idf[term]**2) *
+                                     query_word_counts[term])
+
+    return doc_scores
+
+
+def index_search(query, index, idf, doc_norms, score_func=accumulate_dot_scores, tokenizer=treebank_tokenizer):
+    results = []
+    query = query.lower()
+    tokens = tokenizer.tokenize(query)
+    query_word_counts = {}
+    for t in tokens:
+        if t in query_word_counts:
+            query_word_counts[t] += 1
+        else:
+            query_word_counts[t] = 1
+    q = 0
+    for term in query_word_counts:
+        if term in idf:
+            q += (idf[term] * query_word_counts[term]) ** 2
+
+    scores = score_func(query_word_counts, index, idf)
+    # print(scores)
+    for i, score in scores.items():
+        curr = score/((q ** (1/2)) * doc_norms[i])
+        results.append((curr, i))
+
+    results = sorted(results, key=lambda x: x[0], reverse=True)
+    return results
 
 
 app.run(debug=True)
