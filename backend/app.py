@@ -1,5 +1,7 @@
 import json
 import os
+import numpy
+import re
 from flask import Flask, render_template, request
 from flask_cors import CORS
 from helpers.MySQLDatabaseHandler import MySQLDatabaseHandler
@@ -12,7 +14,7 @@ os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..", os.curdir))
 # Don't worry about the deployment credentials, those are fixed
 # You can use a different DB name if you want to
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = ""
+MYSQL_USER_PASSWORD = "admin123"
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "dogdb"
 
@@ -20,8 +22,7 @@ mysql_engine = MySQLDatabaseHandler(
     MYSQL_USER, MYSQL_USER_PASSWORD, MYSQL_PORT, MYSQL_DATABASE)
 
 # Path to init.sql file. This file can be replaced with your own file for testing on localhost, but do NOT move the init.sql file
-mysql_engine.load_file_into_db(os.path.join(
-    os.environ['ROOT_PATH'], 'dogbreeddata.sql'))
+mysql_engine.load_file_into_db()
 
 app = Flask(__name__)
 CORS(app)
@@ -42,8 +43,9 @@ def home():
 
 
 @app.route("/perfectpupper")
-def episodes_search():
+def dog_search():
     print("request: ", request)
+    print(preprocess()[0])
     hours = request.args.get("hours")
     space = request.args.get("space")
     trait1 = request.args.get("trait1")
@@ -105,4 +107,24 @@ def space_commitment(size):
     return size
 
 
-# app.run(debug=True)
+def tokenize(text):
+    if text != None:
+        return [x for x in re.findall(r"[a-z]+", text.lower())]
+    else:
+        return []
+
+
+def preprocess():
+    query_sql = f"""SELECT descript, temperament FROM breeds"""
+    data = mysql_engine.query_selector(query_sql)
+    cleaned_data = []
+    for descript, temperament in list(data):
+        breed_data = []
+        breed_data.append(tokenize(descript))
+        breed_data.append(tokenize(temperament))
+        breed_data = [item for sublist in breed_data for item in sublist]
+        cleaned_data.append(breed_data)
+    return cleaned_data
+
+
+app.run(debug=True)
