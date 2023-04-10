@@ -3,6 +3,7 @@ import math
 import os
 import numpy as np
 import re
+from nltk.tokenize import TreebankWordTokenizer
 from flask import Flask, render_template, request
 from flask_cors import CORS
 from helpers.MySQLDatabaseHandler import MySQLDatabaseHandler
@@ -19,6 +20,8 @@ MYSQL_USER_PASSWORD = "perfectpup_4300!"
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "dogdb"
 INDEX_TO_BREED = {}
+treebank_tokenizer = TreebankWordTokenizer()
+
 
 mysql_engine = MySQLDatabaseHandler(
     MYSQL_USER, MYSQL_USER_PASSWORD, MYSQL_PORT, MYSQL_DATABASE)
@@ -48,11 +51,22 @@ def home():
 def dog_search():
     print("request: ", request)
     # print(preprocess()[0])
+    index_to_breed()
     cleaned_data = preprocess()
     inv_indx = inv_idx(cleaned_data)
+    n_docs = len(cleaned_data)
     #print("inv_inde:", inv_idx(cleaned_data))
-    print("idf: ", compute_idf(inv_indx, len(
-        cleaned_data), min_df=0, max_df_ratio=.95))
+    # print("idf: ", compute_idf(inv_indx, len(
+    #     cleaned_data), min_df=0, max_df_ratio=.95))
+    idf = compute_idf(inv_indx, n_docs, min_df=0, max_df_ratio=.95)
+    doc_norms = compute_doc_norms(inv_indx, idf, n_docs)
+    query = "affectionate eager enthusiastic"
+    # TODO: how to weigh traits more/less
+    breeds = index_search(query, inv_indx, idf, doc_norms,
+                          score_func=accumulate_dot_scores, tokenizer=treebank_tokenizer)
+    print("breeds[score, doc_id] ", breeds)
+    print("results: ", format_output(breeds))
+
     hours = request.args.get("hours")
     space = request.args.get("space")
     trait1 = request.args.get("trait1")
@@ -116,7 +130,7 @@ def space_commitment(size):
 
 def index_to_breed():
 
-    query_sql = f"""SELECT breed FROM breeds"""
+    query_sql = f"""SELECT breed_name FROM breeds"""
     breeds = mysql_engine.query_selector(query_sql)
     for i, breed in enumerate(breeds):
         INDEX_TO_BREED[i] = breed
@@ -227,6 +241,14 @@ def index_search(query, index, idf, doc_norms, score_func=accumulate_dot_scores,
 
     results = sorted(results, key=lambda x: x[0], reverse=True)
     return results
+
+# just for testing purposes
+
+
+def format_output(raw_results):
+    print("idx to breed: ", INDEX_TO_BREED)
+    for score, id in raw_results[:10]:
+        print("breed: ", INDEX_TO_BREED[id], " score: ", score)
 
 
 app.run(debug=True)
