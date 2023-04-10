@@ -115,6 +115,7 @@ def tokenize(text):
 
 
 def preprocess():
+    # hey
     query_sql = f"""SELECT descript, temperament FROM breeds"""
     data = mysql_engine.query_selector(query_sql)
     cleaned_data = []
