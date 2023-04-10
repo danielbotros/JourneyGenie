@@ -1,4 +1,5 @@
 import json
+import math
 import os
 import numpy
 import re
@@ -45,9 +46,12 @@ def home():
 @app.route("/perfectpupper")
 def dog_search():
     print("request: ", request)
-    print(preprocess()[0])
+    # print(preprocess()[0])
     cleaned_data = preprocess()
-    print("inv_inde:", inv_idx(cleaned_data))
+    inv_indx = inv_idx(cleaned_data)
+    #print("inv_inde:", inv_idx(cleaned_data))
+    print("idf: ", compute_idf(inv_indx, len(
+        cleaned_data), min_df=0, max_df_ratio=.95))
     hours = request.args.get("hours")
     space = request.args.get("space")
     trait1 = request.args.get("trait1")
@@ -129,6 +133,8 @@ def preprocess():
         cleaned_data.append(breed_data)
     return cleaned_data
 
+# build inverted index
+
 
 def inv_idx(cleaned_data):
     inv_index = {}
@@ -145,6 +151,18 @@ def inv_idx(cleaned_data):
             else:
                 inv_index[t].append((i, count))
     return inv_index
+
+# compute idf
+
+
+def compute_idf(inv_idx, n_docs, min_df=10, max_df_ratio=.95):
+    idf_dict = {}
+    for d, l in inv_idx.items():
+        if len(l) >= min_df and len(l) <= max_df_ratio*n_docs:
+            val = n_docs/(1 + len(l))
+            idf = math.log(val, 2)
+            idf_dict[d] = idf
+    return idf_dict
 
 
 app.run(debug=True)
