@@ -1,7 +1,7 @@
 import json
 import math
 import os
-import numpy
+import numpy as np
 import re
 from flask import Flask, render_template, request
 from flask_cors import CORS
@@ -68,12 +68,12 @@ def time_commitment(hours, space, trait1, trait2, trait3):
     print("trait1: ",  trait1)
     print("trait2: ",  trait2)
     print("trait3: ",  trait3)
-    query_sql = f"""SELECT breed_name, trainability_value, descript, temperament, max_weight 
-    FROM breeds 
-    WHERE trainability_value >= {hours} 
-    AND min_weight >= {size*10 - 20} AND min_weight <= {size*10} 
-    AND (temperament LIKE '%%{trait1}%%' 
-    OR temperament LIKE '%%{trait2}%%' 
+    query_sql = f"""SELECT breed_name, trainability_value, descript, temperament, max_weight
+    FROM breeds
+    WHERE trainability_value >= {hours}
+    AND min_weight >= {size*10 - 20} AND min_weight <= {size*10}
+    AND (temperament LIKE '%%{trait1}%%'
+    OR temperament LIKE '%%{trait2}%%'
     OR temperament LIKE '%%{trait3}%%')
     limit 10"""
     data = mysql_engine.query_selector(query_sql)
@@ -121,7 +121,6 @@ def tokenize(text):
 
 
 def preprocess():
-    # hey
     query_sql = f"""SELECT descript, temperament FROM breeds"""
     data = mysql_engine.query_selector(query_sql)
     cleaned_data = []
@@ -153,9 +152,10 @@ def inv_idx(cleaned_data):
     return inv_index
 
 # compute idf
+# TODO: MESS AROUND WITH VALUES
 
 
-def compute_idf(inv_idx, n_docs, min_df=10, max_df_ratio=.95):
+def compute_idf(inv_idx, n_docs, min_df=0, max_df_ratio=.95):
     idf_dict = {}
     for d, l in inv_idx.items():
         if len(l) >= min_df and len(l) <= max_df_ratio*n_docs:
@@ -163,6 +163,19 @@ def compute_idf(inv_idx, n_docs, min_df=10, max_df_ratio=.95):
             idf = math.log(val, 2)
             idf_dict[d] = idf
     return idf_dict
+
+# compute norms
+
+
+def compute_doc_norms(index, idf, n_docs):
+    norms = np.zeros(n_docs)
+    for term, lis in index.items():
+        if term in idf:
+            idf_value = idf[term]
+            for (d, tf) in lis:
+                norms[d] += (tf * idf_value) ** 2
+    norms = np.sqrt(norms)
+    return norms
 
 
 app.run(debug=True)
