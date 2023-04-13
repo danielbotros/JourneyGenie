@@ -11,7 +11,7 @@ from helpers.MySQLDatabaseHandler import MySQLDatabaseHandler
 os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..", os.curdir))
 
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = "perfectpup_4300!"
+MYSQL_USER_PASSWORD = "admin123"
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "dogdb"
 INDEX_TO_BREED = {}
@@ -55,14 +55,25 @@ def dog_search():
     direct_search_results = direct_search(time, space, trait1, trait2, trait3)
     index_search_results = format_breeds(index_search(query, inv_indx, idf, doc_norms,
                                                       score_func=accumulate_dot_scores, tokenizer=treebank_tokenizer))
-    print("index search results: ", index_search_results)
-    print("sql search results: ", direct_search_results)
+    # print("index search results: ", index_search_results)
+    # print("sql search results: ", direct_search_results)
     combined_breeds = merge_results(
         direct_search_results, index_search_results)
     # results = format_output(combined_breeds)
-    print("breeds: ", combined_breeds)
+    # print("breeds: ", combined_breeds)
     # print("results: ", results)
-    return combined_breeds
+    results = ()
+    for breed_name in combined_breeds:
+        results = results + tuple(breed_name)
+    print(results)
+
+    query_sql = f"""SELECT breed_name, descript, temperament, 
+    energy_level_value, trainability_value, grooming_frequency_value,
+    max_weight, max_height FROM breeds WHERE breed_name IN {results}"""
+    data = mysql_engine.query_selector(query_sql)
+    keys = ["breed_name", "descript", "temperament", "energy_level_value", "trainability_value",
+            "grooming_frequency_value", "max_weight", "max_height"]
+    return json.dumps([dict(zip(keys, i)) for i in data])
 
 
 def merge_results(direct_results, index_results):
@@ -71,16 +82,12 @@ def merge_results(direct_results, index_results):
     dir = set(direct_results)
     ind = set(index_results)
     matches = dir.intersection(ind)  # TODO: why no intersection
-    print("dir: ", dir)
-    print("ind: ", ind)
-    print("matches: ", matches)
 
     if len(matches) < 10:
         for res in index_results:
             matches.add(res)
-    print("merged res: ", matches)
 
-    return list(matches)
+    return list(matches)[:10]
 
 
 def direct_search(time, space, trait1, trait2, trait3):
@@ -127,7 +134,6 @@ def direct_search(time, space, trait1, trait2, trait3):
     #         "demeanor_category"]
     # keys = ["breed_name", "trainability_value",
     #         "energy_level_value", "grooming_frequency_value"]
-    print(data)
     return list(data)
     # return json.dumps([dict(zip(keys, i)) for i in data])
 # WHERE 2*(trainability_value) <= '%%{hours}%% AND '%%{hours}%%' < 2*(trainability_value);"""
