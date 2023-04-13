@@ -52,7 +52,7 @@ def dog_search():
     # TODO: make sure same trait not inputted twice
     query = trait1 + " " + trait2 + " " + trait3
     print("qUERY: ", query)
-    direct_search_results = direct_search(time, space, trait1, trait2, trait3)
+    direct_search_results = direct_search(time, space)
     index_search_results = format_breeds(index_search(query, inv_indx, idf, doc_norms,
                                                       score_func=accumulate_dot_scores, tokenizer=treebank_tokenizer))
     # print("index search results: ", index_search_results)
@@ -90,19 +90,9 @@ def merge_results(direct_results, index_results):
     return list(matches)[:10]
 
 
-def direct_search(time, space, trait1, trait2, trait3):
+def direct_search(time, space):
     time_values = compute_time(time)
     space_values = compute_space(space)
-
-    # print("max_height: ", space_values[0])
-    # print("max_weight: ", space_values[1])
-
-    # print("energy_level_value: ", time_values[0])
-    # print("grooming_frequency_value: ", time_values[1])
-    # print("trainability_value: ", time_values[2])
-    # , descript, temperament,  energy_level_value, trainability_value,
-    # grooming_frequency_value,    max_weight, max_height
-
     query_sql = f"""SELECT breed_name
     FROM breeds
     WHERE max_height <= {space_values[0]} 
@@ -114,29 +104,7 @@ def direct_search(time, space, trait1, trait2, trait3):
     
     """
     data = mysql_engine.query_selector(query_sql)
-    keys = ["breed_name", "descript", "energy_level_value", "trainability_value",
-            "grooming_frequency_value", "max_weight", "max_height"]
-    # keys = ["breed_name", "descript", "temperament", "popularity", "min_height", "max_height",
-    #         "min_weight",
-    #         "max_weight",
-    #         "min_expectancy",
-    #         "max_expectancy",
-    #         "dog_group",
-    #         "grooming_frequency_value",
-    #         "grooming_frequency_category",
-    #         "shedding_value",
-    #         "shedding_category",
-    #         "energy_level_value",
-    #         "energy_level_category",
-    #         "trainability_value",
-    #         "trainability_category",
-    #         "demeanor_value",
-    #         "demeanor_category"]
-    # keys = ["breed_name", "trainability_value",
-    #         "energy_level_value", "grooming_frequency_value"]
     return list(data)
-    # return json.dumps([dict(zip(keys, i)) for i in data])
-# WHERE 2*(trainability_value) <= '%%{hours}%% AND '%%{hours}%%' < 2*(trainability_value);"""
 
 
 def compute_space(space):
