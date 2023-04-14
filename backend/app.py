@@ -8,15 +8,10 @@ from flask import Flask, render_template, request
 from flask_cors import CORS
 from helpers.MySQLDatabaseHandler import MySQLDatabaseHandler
 
-# ROOT_PATH for linking with all your files.
-# Feel free to use a config.py or settings.py with a global export variable
 os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..", os.curdir))
 
-# These are the DB credentials for your OWN MySQL
-# Don't worry about the deployment credentials, those are fixed
-# You can use a different DB name if you want to
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = "dirtbikesock146"
+MYSQL_USER_PASSWORD = "admin123"
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "dogdb"
 INDEX_TO_BREED = {}
@@ -26,20 +21,10 @@ treebank_tokenizer = TreebankWordTokenizer()
 mysql_engine = MySQLDatabaseHandler(
     MYSQL_USER, MYSQL_USER_PASSWORD, MYSQL_PORT, MYSQL_DATABASE)
 
-# Path to init.sql file. This file can be replaced with your own file for testing on localhost, but do NOT move the init.sql file
 mysql_engine.load_file_into_db()
 
 app = Flask(__name__)
 CORS(app)
-
-# # Sample search, the LIKE operator in this case is hard-coded,
-# # but if you decide to use SQLAlchemy ORM framework,
-# # there's a much better and cleaner way to do this
-# def sql_search(episode):
-#     query_sql = f"""SELECT * FROM episodes WHERE LOWER( title ) LIKE '%%{episode.lower()}%%' limit 10"""
-#     keys = ["id","title","descr"]
-#     data = mysql_engine.query_selector(query_sql)
-#     return json.dumps([dict(zip(keys,i)) for i in data])
 
 
 @app.route("/")
@@ -50,84 +35,76 @@ def home():
 @app.route("/perfectpupper")
 def dog_search():
     print("request: ", request)
-    # print(preprocess()[0])
     index_to_breed()
     cleaned_data = preprocess()
     inv_indx = inv_idx(cleaned_data)
     n_docs = len(cleaned_data)
-    #print("inv_inde:", inv_idx(cleaned_data))
-    # print("idf: ", compute_idf(inv_indx, len(
-    #     cleaned_data), min_df=0, max_df_ratio=.95))
     idf = compute_idf(inv_indx, n_docs, min_df=0, max_df_ratio=.95)
     doc_norms = compute_doc_norms(inv_indx, idf, n_docs)
-    query = "affectionate eager enthusiastic"
+
     # TODO: how to weigh traits more/less
-    breeds = index_search(query, inv_indx, idf, doc_norms,
-                          score_func=accumulate_dot_scores, tokenizer=treebank_tokenizer)
-    print("breeds[score, doc_id] ", breeds)
-    print("results: ", format_output(breeds))
 
     time = request.args.get("time")
     space = request.args.get("space")
     trait1 = request.args.get("trait1")
     trait2 = request.args.get("trait2")
     trait3 = request.args.get("trait3")
-    return time_commitment(time, space, trait1, trait2, trait3)
-
-
-def time_commitment(time, space, trait1, trait2, trait3):
-    time_values = compute_time(time)
-    space_values = compute_space(space)
-
-    print("max_height: ", space_values[0])
-    print("max_weight: ", space_values[1])
-
-    print("energy_level_value: ", time_values[0])
-    print("grooming_frequency_value: ", time_values[1])
-    print("trainability_value: ", time_values[2])
-
-    # print("trait1: ",  trait1)
-    # print("trait2: ",  trait2)
-    # print("trait3: ",  trait3)
+    # TODO: make sure same trait not inputted twice
+    query = trait1 + " " + trait2 + " " + trait3
+    print("qUERY: ", query)
+    direct_search_results = direct_search(time, space)
+    index_search_results = format_breeds(index_search(query, inv_indx, idf, doc_norms,
+                                                      score_func=accumulate_dot_scores, tokenizer=treebank_tokenizer))
+    # print("index search results: ", index_search_results)
+    # print("sql search results: ", direct_search_results)
+    combined_breeds = merge_results(
+        direct_search_results, index_search_results)
+    # results = format_output(combined_breeds)
+    # print("breeds: ", combined_breeds)
+    # print("results: ", results)
+    results = ()
+    for breed_name in combined_breeds:
+        results = results + tuple(breed_name)
+    print(results)
 
     query_sql = f"""SELECT breed_name, descript, temperament, 
     energy_level_value, trainability_value, grooming_frequency_value,
-    max_weight, max_height FROM breeds
+    max_weight, max_height FROM breeds WHERE breed_name IN {results}"""
+    data = mysql_engine.query_selector(query_sql)
+    keys = ["breed_name", "descript", "temperament", "energy_level_value", "trainability_value",
+            "grooming_frequency_value", "max_weight", "max_height"]
+    return json.dumps([dict(zip(keys, i)) for i in data])
+
+
+def merge_results(direct_results, index_results):
+    matches = []
+
+    dir = set(direct_results)
+    ind = set(index_results)
+    matches = dir.intersection(ind)  # TODO: why no intersection
+
+    if len(matches) < 10:
+        for res in index_results:
+            matches.add(res)
+
+    return list(matches)[:10]
+
+
+def direct_search(time, space):
+    time_values = compute_time(time)
+    space_values = compute_space(space)
+    query_sql = f"""SELECT breed_name
+    FROM breeds
     WHERE max_height <= {space_values[0]} 
     AND max_weight <= {space_values[1]}
 
     AND energy_level_value <= {time_values[0]} 
     AND grooming_frequency_value <= {time_values[1]}
     AND trainability_value >= {time_values[2]} 
-
-    AND (temperament LIKE '%%{trait1}%%'
-    OR temperament LIKE '%%{trait2}%%'
-    OR temperament LIKE '%%{trait3}%%')
-    limit 10"""
+    
+    """
     data = mysql_engine.query_selector(query_sql)
-    keys = ["breed_name", "descript", "temperament", "energy_level_value", "trainability_value",
-            "grooming_frequency_value", "max_weight", "max_height"]
-    # keys = ["breed_name", "descript", "temperament", "popularity", "min_height", "max_height",
-    #         "min_weight",
-    #         "max_weight",
-    #         "min_expectancy",
-    #         "max_expectancy",
-    #         "dog_group",
-    #         "grooming_frequency_value",
-    #         "grooming_frequency_category",
-    #         "shedding_value",
-    #         "shedding_category",
-    #         "energy_level_value",
-    #         "energy_level_category",
-    #         "trainability_value",
-    #         "trainability_category",
-    #         "demeanor_value",
-    #         "demeanor_category"]
-    # keys = ["breed_name", "trainability_value",
-    #         "energy_level_value", "grooming_frequency_value"]
-    print(data)
-    return json.dumps([dict(zip(keys, i)) for i in data])
-# WHERE 2*(trainability_value) <= '%%{hours}%% AND '%%{hours}%%' < 2*(trainability_value);"""
+    return list(data)
 
 
 def compute_space(space):
@@ -266,10 +243,16 @@ def index_search(query, index, idf, doc_norms, score_func=accumulate_dot_scores,
 # just for testing purposes
 
 
-def format_output(raw_results):
-    print("idx to breed: ", INDEX_TO_BREED)
-    for score, id in raw_results[:10]:
-        print("breed: ", INDEX_TO_BREED[id], " score: ", score)
+def format_breeds(raw_results):
+    results = []
+    for score, id in raw_results[:50]:
+        results.append(INDEX_TO_BREED[id])
+    return results
+
+
+# def format_output(raw_results):
+#     for score, id in raw_results[:10]:
+#         print("breed: ", INDEX_TO_BREED[id], " score: ", score)
 
 
 app.run(debug=True)
