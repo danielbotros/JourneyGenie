@@ -16,7 +16,7 @@ os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..", os.curdir))
 # Don't worry about the deployment credentials, those are fixed
 # You can use a different DB name if you want to
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = ""
+MYSQL_USER_PASSWORD = "dirtbikesock146"
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "dogdb"
 INDEX_TO_BREED = {}
@@ -105,7 +105,7 @@ def time_commitment(time, space, trait1, trait2, trait3):
     OR temperament LIKE '%%{trait3}%%')
     limit 10"""
     data = mysql_engine.query_selector(query_sql)
-    keys = ["breed_name", "descript", "temperament", "energy_level_value", "trainability_value", 
+    keys = ["breed_name", "descript", "temperament", "energy_level_value", "trainability_value",
             "grooming_frequency_value", "max_weight", "max_height"]
     # keys = ["breed_name", "descript", "temperament", "popularity", "min_height", "max_height",
     #         "min_weight",
@@ -129,6 +129,7 @@ def time_commitment(time, space, trait1, trait2, trait3):
     return json.dumps([dict(zip(keys, i)) for i in data])
 # WHERE 2*(trainability_value) <= '%%{hours}%% AND '%%{hours}%%' < 2*(trainability_value);"""
 
+
 def compute_space(space):
     space = space.lower()
     if space == "small":
@@ -136,7 +137,8 @@ def compute_space(space):
     elif space == "medium":
         return [68, 27]
     else:
-         return [999, 999]
+        return [999, 999]
+
 
 def compute_time(time):
     time = time.lower()
@@ -145,7 +147,8 @@ def compute_time(time):
     elif time == "2":
         return [0.8, 0.8, 0.4]
     else:
-         return [999, 999, 0]
+        return [999, 999, 0]
+
 
 def index_to_breed():
     query_sql = f"""SELECT breed_name FROM breeds"""
@@ -153,11 +156,13 @@ def index_to_breed():
     for i, breed in enumerate(breeds):
         INDEX_TO_BREED[i] = breed
 
+
 def tokenize(text):
     if text != None:
         return [x for x in re.findall(r"[a-z]+", text.lower())]
     else:
         return []
+
 
 def preprocess():
     query_sql = f"""SELECT descript, temperament FROM breeds"""
@@ -172,6 +177,8 @@ def preprocess():
     return cleaned_data
 
 # build inverted index
+
+
 def inv_idx(cleaned_data):
     inv_index = {}
     for i, data in enumerate(cleaned_data):
@@ -190,6 +197,8 @@ def inv_idx(cleaned_data):
 
 # compute idf
 # TODO: MESS AROUND WITH VALUES
+
+
 def compute_idf(inv_idx, n_docs, min_df=0, max_df_ratio=.95):
     idf_dict = {}
     for d, l in inv_idx.items():
@@ -200,6 +209,8 @@ def compute_idf(inv_idx, n_docs, min_df=0, max_df_ratio=.95):
     return idf_dict
 
 # compute norms
+
+
 def compute_doc_norms(index, idf, n_docs):
     norms = np.zeros(n_docs)
     for term, lis in index.items():
@@ -211,6 +222,8 @@ def compute_doc_norms(index, idf, n_docs):
     return norms
 
 # implement term at a time score accumulation
+
+
 def accumulate_dot_scores(query_word_counts, index, idf):
     doc_scores = {}
     for term, lis in index.items():
@@ -251,6 +264,8 @@ def index_search(query, index, idf, doc_norms, score_func=accumulate_dot_scores,
     return results
 
 # just for testing purposes
+
+
 def format_output(raw_results):
     print("idx to breed: ", INDEX_TO_BREED)
     for score, id in raw_results[:10]:
