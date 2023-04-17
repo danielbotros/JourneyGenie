@@ -11,7 +11,7 @@ from helpers.MySQLDatabaseHandler import MySQLDatabaseHandler
 os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..", os.curdir))
 
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = "admin123"
+MYSQL_USER_PASSWORD = ""
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "dogdb"
 INDEX_TO_BREED = {}
@@ -255,4 +255,4 @@ def format_breeds(raw_results):
 #         print("breed: ", INDEX_TO_BREED[id], " score: ", score)
 
 
-app.run(debug=True)
+# app.run(debug=True)
