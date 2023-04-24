@@ -3,10 +3,8 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link
-  href="https://fonts.googleapis.com/css2?family=Kanit&family=Montserrat&family=Open+Sans:wght@500&display=swap"
-  rel="stylesheet"
-/>
+<link href="https://fonts.googleapis.com/css2?family=Kanit&family=Montserrat&family=Open+Sans:wght@500&display=swap"
+  rel="stylesheet" />
 
 <body>
   <div class="full-body-container">
@@ -23,11 +21,8 @@
         <h2>What personality traits do you value about a dog?</h2>
         <div class="dropdown">
           <label for="trait1">Personality 1: </label>
-          <select
-            name="trait1"
-            id="trait1_select"
-            onchange="updateTrait1(this.value);"
-          >
+          <select name="trait1" id="trait1_select" onchange="updateTrait1(this.value);">
+
             <option value="Independent" selected>Independent</option>
             <option value="Playful">Playful</option>
             <option value="Affectionate">Affectionate</option>
@@ -43,11 +38,8 @@
 
         <div class="dropdown">
           <label for="trait2">Personality 2: </label>
-          <select
-            name="trait2"
-            id="trait2_select"
-            onchange="updateTrait2(this.value);"
-          >
+          <select name="trait2" id="trait2_select" onchange="updateTrait2(this.value);">
+
             <option value="Independent">Independent</option>
             <option value="Playful" selected>Playful</option>
             <option value="Affectionate">Affectionate</option>
@@ -63,11 +55,8 @@
 
         <div class="dropdown">
           <label for="trait1">Personality 3: </label>
-          <select
-            name="trait3"
-            id="trait3_select"
-            onchange="updateTrait3(this.value);"
-          >
+          <select name="trait3" id="trait3_select" onchange="updateTrait3(this.value);">
+
             <option value="Independent">Independent</option>
             <option value="Playful">Playful</option>
             <option value="Affectionate" selected>Affectionate</option>
@@ -101,11 +90,8 @@
         <h2>How much time can you spend with your dog?</h2>
         <div class="dropdown">
           <label for="time">Time: </label>
-          <select
-            name="time"
-            id="time_select"
-            onchange="updateTime(this.value);"
-          >
+          <select name="time" id="time_select" onchange="updateTime(this.value);">
+
             <option value="1">Minimal time (1 hr/day)</option>
             <option value="2">Reasonable time (2 hrs/day)</option>
             <option value="3">A lot of time (2+ hrs/day)</option>
@@ -115,11 +101,8 @@
           <h2>How much space do you have?</h2>
           <div class="dropdown">
             <label for="space">Space: </label>
-            <select
-              name="space"
-              id="space_select"
-              onchange="updateSpace(this.value);"
-            >
+            <select name="space" id="space_select" onchange="updateSpace(this.value);">
+
               <option value="Small">Small</option>
               <option value="Medium">Medium</option>
               <option value="Large">Large</option>
@@ -181,6 +164,8 @@
     ) {
       return `
         <div class="block">
+          // tests that the img tag correctly displays a random dog image
+            <img src="https://www.dogbreedslist.info/uploads/dog-pictures/american-akita-2.jpg" alt="American Akita" width="80%" height="80%">
             <h3 class='breed-name'>${breed_name}</h3>
             <h4 class='breed-traits'> <em>${traits}</em></h4>
               <div class="row2">
@@ -226,33 +211,34 @@
       //fetch("/episodes?" + new URLSearchParams({ hours: document.getElementById("hours_slider").value }, {space: document.getElementById("space_select").value}).toString())
       fetch(
         "/perfectpupper?" +
-          new URLSearchParams({
-            time: document.getElementById("time_select").value,
-            space: document.getElementById("space_select").value,
-            trait1: document.getElementById("trait1_select").value,
-            trait2: document.getElementById("trait2_select").value,
-            trait3: document.getElementById("trait3_select").value,
-          })
+        new URLSearchParams({
+          time: document.getElementById("time_select").value,
+          space: document.getElementById("space_select").value,
+          trait1: document.getElementById("trait1_select").value,
+          trait2: document.getElementById("trait2_select").value,
+          trait3: document.getElementById("trait3_select").value,
+        })
       )
+      
         .then((response) => response.json())
         .then((data) =>
           data.length == 0
             ? (document.getElementById("answer-box").innerHTML = noResults())
             : data.forEach((row) => {
-                console.log("row: ", row);
-                let tempDiv = document.createElement("div");
-                tempDiv.innerHTML = answerBoxTemplate(
-                  (breed_name = row.breed_name),
-                  (trainability = row.trainability_value),
-                  (weight = row.max_weight),
-                  (description = row.descript),
-                  (traits = row.temperament),
-                  (energy_level = row.energy_level_value),
-                  (grooming_frequency = row.grooming_frequency_value),
-                  (height = row.max_height)
-                );
-                document.getElementById("answer-box").appendChild(tempDiv);
-              })
+              console.log("row: ", row);
+              let tempDiv = document.createElement("div");
+              tempDiv.innerHTML = answerBoxTemplate(
+                (breed_name = row.breed_name),
+                (trainability = row.trainability_value),
+                (weight = row.max_weight),
+                (description = row.descript),
+                (traits = row.temperament),
+                (energy_level = row.energy_level_value),
+                (grooming_frequency = row.grooming_frequency_value),
+                (height = row.max_height)
+              );
+              document.getElementById("answer-box").appendChild(tempDiv);
+            })
         );
     }
   </script>
