@@ -15,7 +15,7 @@ from sklearn.preprocessing import normalize
 os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..", os.curdir))
 
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = "perfectpup_4300!"
+MYSQL_USER_PASSWORD = "admin123"
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "dogdb"
 INDEX_TO_BREED = {}
@@ -165,20 +165,20 @@ def tokenize(text):
         return []
 
 
-def preprocess():
+# def preprocess():
 
-    query_sql = f"""SELECT descript1, temperament1, descript2, temperament2 FROM breeds"""
-    data = mysql_engine.query_selector(query_sql)
-    cleaned_data = []
-    for descript1, temperament1, descript2, temperament2 in list(data):
-        breed_data = []
-        breed_data.append(tokenize(descript1))
-        breed_data.append(tokenize(temperament1))
-        breed_data.append(tokenize(descript2))
-        breed_data.append(tokenize(temperament2))
-        breed_data = [item for sublist in breed_data for item in sublist]
-        cleaned_data.append(breed_data)
-    return cleaned_data
+#     query_sql = f"""SELECT descript1, temperament1, descript2, temperament2 FROM breeds"""
+#     data = mysql_engine.query_selector(query_sql)
+#     cleaned_data = []
+#     for descript1, temperament1, descript2, temperament2 in list(data):
+#         breed_data = []
+#         breed_data.append(tokenize(descript1))
+#         breed_data.append(tokenize(temperament1))
+#         breed_data.append(tokenize(descript2))
+#         breed_data.append(tokenize(temperament2))
+#         breed_data = [item for sublist in breed_data for item in sublist]
+#         cleaned_data.append(breed_data)
+#     return cleaned_data
 
 
 def get_data():
