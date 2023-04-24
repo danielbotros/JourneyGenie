@@ -22,6 +22,7 @@
 
         <div>
           <label for="trait1">Personality 1: </label>
+
           <form autocomplete="off" action="/action_page.php">
             <div class="autocomplete" style="width:300px;">
               <input id="trait1_select" type="text" placeholder="e.g. Friendly, Loyal, etc.">
@@ -45,12 +46,14 @@
               <input id="trait3_select" type="text" placeholder="e.g. Friendly, Loyal, etc.">
             </div>
           </form>
+
         </div>
 
         <h2>How much time can you spend with your dog?</h2>
         <div class="dropdown">
           <label for="time">Time: </label>
           <select name="time" id="time_select">
+
             <option value="1">Minimal time (1 hr/day)</option>
             <option value="2" selected>Reasonable time (2 hrs/day)</option>
             <option value="3">A lot of time (2+ hrs/day)</option>
@@ -60,6 +63,7 @@
           <div class="dropdown">
             <label for="space">Space: </label>
             <select name="space" id="space_select">
+
               <option value="Small">Small</option>
               <option value="Medium" selected>Medium</option>
               <option value="Large">Large</option>
@@ -89,6 +93,8 @@
     ) {
       return `
         <div class="block">
+            // tests that the img tag correctly displays a random dog image
+            <img src="https://www.dogbreedslist.info/uploads/dog-pictures/american-akita-2.jpg" alt="American Akita" width="80%" height="80%">
             <h3 class='breed-name'>${breed_name}</h3>
             <h4 class='breed-traits'> <em>${traits}</em></h4>
               <div class="row2">
