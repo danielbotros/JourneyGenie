@@ -1,3 +1,5 @@
+import matplotlib.pyplot as plt
+import matplotlib
 import json
 import math
 import os
@@ -7,15 +9,23 @@ from nltk.tokenize import TreebankWordTokenizer
 from flask import Flask, render_template, request
 from flask_cors import CORS
 from helpers.MySQLDatabaseHandler import MySQLDatabaseHandler
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.decomposition import TruncatedSVD
+from scipy.sparse.linalg import svds
+from sklearn.preprocessing import normalize
+
 
 os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..", os.curdir))
 
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = ""
+MYSQL_USER_PASSWORD = "perfectpup_4300!"
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "dogdb"
 INDEX_TO_BREED = {}
 treebank_tokenizer = TreebankWordTokenizer()
+QUERY_VECTOR = []
+DOCS_COMPRESSED_NORMED = []
+V_TRANS = []
 
 
 mysql_engine = MySQLDatabaseHandler(
@@ -27,15 +37,60 @@ app = Flask(__name__)
 CORS(app)
 
 
-@app.route("/")
+def index_to_breed():
+    query_sql = f"""SELECT breed_name FROM breeds"""
+    breeds = mysql_engine.query_selector(query_sql)
+    for i, breed in enumerate(breeds):
+        INDEX_TO_BREED[i] = breed
+
+
+def svd(query):
+    text = get_data()
+    index_to_breed()
+    print("text: ", text)
+    # TODO: make vectorizer global variable
+    vectorizer = TfidfVectorizer(
+        stop_words='english', smooth_idf=True)  # TODO: add df?
+    input_matrix = vectorizer.fit_transform(text)
+    print(input_matrix.shape)
+    query_vector = vectorizer.transform(
+        [query]).toarray().T
+    print("query vector: ", query_vector)
+    QUERY_VECTOR = query_vector
+
+    u, s, v_trans = svds(input_matrix, k=40)
+    print("u: ", u)
+    print("s: ", s)
+    print("v_trans: ", v_trans.shape)
+
+    docs_compressed = u
+    # query_vector = docs_compressed.dot(query_vector)
+
+    docs_compressed_normed = normalize(docs_compressed)
+
+    V_TRANS = v_trans
+    DOCS_COMPRESSED_NORMED = docs_compressed_normed
+    index_search_results = []
+
+    for i, score in cossim_with_svd(query_vector, docs_compressed_normed, v_trans, k=30): 
+        print("breed: ", INDEX_TO_BREED[i], " score: ", score)
+        index_search_results.append(INDEX_TO_BREED[i])
+    print()
+    return index_search_results
+
+
+@ app.route("/")
 def home():
     return render_template('base.html', title="sample html")
 
 
-@app.route("/perfectpupper")
+@ app.route("/perfectpupper")
 def dog_search():
-    print("request: ", request)
+    # print("data ", get_data())
+    # get_topics(components)
     index_to_breed()
+
+    print("request: ", request)
     cleaned_data = preprocess()
     inv_indx = inv_idx(cleaned_data)
     n_docs = len(cleaned_data)
@@ -52,22 +107,21 @@ def dog_search():
     # TODO: make sure same trait not inputted twice
     query = trait1 + " " + trait2 + " " + trait3
     print("qUERY: ", query)
+
+    print("Using SVD:")
+    index_search_results = svd(query)
+
     direct_search_results = direct_search(time, space)
-    index_search_results = format_breeds(index_search(query, inv_indx, idf, doc_norms,
-                                                      score_func=accumulate_dot_scores, tokenizer=treebank_tokenizer))
-    # print("index search results: ", index_search_results)
-    # print("sql search results: ", direct_search_results)
+
     combined_breeds = merge_results(
         direct_search_results, index_search_results)
-    # results = format_output(combined_breeds)
-    # print("breeds: ", combined_breeds)
-    # print("results: ", results)
+
     results = ()
     for breed_name in combined_breeds:
         results = results + tuple(breed_name)
-    print(results)
+    print("results: ", results)
 
-    query_sql = f"""SELECT breed_name, descript, temperament, 
+    query_sql = f"""SELECT breed_name, descript, temperament,
     energy_level_value, trainability_value, grooming_frequency_value,
     max_weight, max_height FROM breeds WHERE breed_name IN {results}"""
     data = mysql_engine.query_selector(query_sql)
@@ -87,7 +141,7 @@ def merge_results(direct_results, index_results):
         for res in index_results:
             matches.add(res)
 
-    return list(matches)[:10]
+    return list(matches)[: 10]
 
 
 def direct_search(time, space):
@@ -95,13 +149,13 @@ def direct_search(time, space):
     space_values = compute_space(space)
     query_sql = f"""SELECT breed_name
     FROM breeds
-    WHERE max_height <= {space_values[0]} 
+    WHERE max_height <= {space_values[0]}
     AND max_weight <= {space_values[1]}
 
-    AND energy_level_value <= {time_values[0]} 
+    AND energy_level_value <= {time_values[0]}
     AND grooming_frequency_value <= {time_values[1]}
-    AND trainability_value >= {time_values[2]} 
-    
+    AND trainability_value >= {time_values[2]}
+
     """
     data = mysql_engine.query_selector(query_sql)
     return list(data)
@@ -127,13 +181,6 @@ def compute_time(time):
         return [999, 999, 0]
 
 
-def index_to_breed():
-    query_sql = f"""SELECT breed_name FROM breeds"""
-    breeds = mysql_engine.query_selector(query_sql)
-    for i, breed in enumerate(breeds):
-        INDEX_TO_BREED[i] = breed
-
-
 def tokenize(text):
     if text != None:
         return [x for x in re.findall(r"[a-z]+", text.lower())]
@@ -142,6 +189,7 @@ def tokenize(text):
 
 
 def preprocess():
+
     query_sql = f"""SELECT descript, temperament FROM breeds"""
     data = mysql_engine.query_selector(query_sql)
     cleaned_data = []
@@ -152,6 +200,32 @@ def preprocess():
         breed_data = [item for sublist in breed_data for item in sublist]
         cleaned_data.append(breed_data)
     return cleaned_data
+
+
+def get_data():
+    # TODO: does this get new descriptions and temperamnents?
+    query_sql = f"""SELECT descript, temperament FROM breeds"""
+    data = mysql_engine.query_selector(query_sql)
+    descript_temp_list = []
+    # print(list(data))
+    for descript, temperament in list(data):
+        breed_data = ""
+        if descript != None:
+            descript = descript.lower()
+            breed_data += descript
+
+        if temperament != None:
+            temperament = temperament.lower()
+            breed_data += temperament
+        descript_temp_list.append(breed_data)
+        print("temperament: ", temperament)
+
+    return descript_temp_list
+
+
+# list of all descriptions, all temperaments
+# TODO: SQL query to get all relevant dat?
+
 
 # build inverted index
 
@@ -216,6 +290,26 @@ def accumulate_dot_scores(query_word_counts, index, idf):
     return doc_scores
 
 
+def cossim_with_svd(query_vector, docs, v_trans, k=5):
+    # denom = np.linalg.norm(query) * np.linalg.norm(docs)
+    print("query vector: ", query_vector.shape)
+    print("docs: ", docs.shape)
+    query_vector = v_trans.dot(query_vector)
+
+    sims = docs.dot(query_vector)
+    sims_with_index = []
+    for i, product in enumerate(sims):
+        sims_with_index.append((i, -1*(product[0])))
+    print("sims: ", sims)
+    asort = sorted(sims_with_index, key=lambda t: t[1])
+    print("asort: ", asort)
+    # results = [(INDEX_TO_BREED[i], sims[i]) for i in asort[1:]]
+
+    results = asort[:k+1]
+    print("results: ", results)
+    return results
+
+
 def index_search(query, index, idf, doc_norms, score_func=accumulate_dot_scores, tokenizer=treebank_tokenizer):
     results = []
     query = query.lower()
@@ -255,4 +349,4 @@ def format_breeds(raw_results):
 #         print("breed: ", INDEX_TO_BREED[id], " score: ", score)
 
 
-# app.run(debug=True)
+app.run(debug=True)
