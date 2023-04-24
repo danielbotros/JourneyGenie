@@ -22,61 +22,36 @@
 
         <div>
           <label for="trait1">Personality 1: </label>
-          <select name="trait1" id="trait1_select" onchange="updateTrait1(this.value);">
-
-            <option value="Independent" selected>Independent</option>
-            <option value="Playful">Playful</option>
-            <option value="Affectionate">Affectionate</option>
-            <option value="Friendly">Friendly</option>
-            <option value="Intelligent">Intelligent</option>
-            <option value="Loyal">Loyal</option>
-            <option value="Active">Active</option>
-            <option value="Smart">Smart</option>
-            <option value="Outgoing">Outgoing</option>
-          </select>
-          <output id="trait1">None Selected</output>
+          <form autocomplete="off" action="/action_page.php">
+            <div class="autocomplete" style="width:300px;">
+              <input id="trait1_select" type="text" placeholder="e.g. Friendly, Loyal, etc.">
+            </div>
+          </form>
         </div>
 
         <div>
           <label for="trait2">Personality 2: </label>
-          <select name="trait2" id="trait2_select" onchange="updateTrait2(this.value);">
-
-            <option value="Independent">Independent</option>
-            <option value="Playful" selected>Playful</option>
-            <option value="Affectionate">Affectionate</option>
-            <option value="Friendly">Friendly</option>
-            <option value="Intelligent">Intelligent</option>
-            <option value="Loyal">Loyal</option>
-            <option value="Active">Active</option>
-            <option value="Smart">Smart</option>
-            <option value="Outgoing">Outgoing</option>
-          </select>
-          <output id="trait2">None Selected</output>
+          <form autocomplete="off" action="/action_page.php">
+            <div class="autocomplete" style="width:300px;">
+              <input id="trait2_select" type="text" placeholder="e.g. Friendly, Loyal, etc.">
+            </div>
+          </form>
         </div>
 
-        <div class="dropdown">
-          <label for="trait1">Personality 3: </label>
-          <select name="trait3" id="trait3_select" onchange="updateTrait3(this.value);">
-
-            <option value="Independent">Independent</option>
-            <option value="Playful">Playful</option>
-            <option value="Affectionate" selected>Affectionate</option>
-            <option value="Friendly">Friendly</option>
-            <option value="Intelligent">Intelligent</option>
-            <option value="Loyal">Loyal</option>
-            <option value="Active">Active</option>
-            <option value="Smart">Smart</option>
-            <option value="Outgoing">Outgoing</option>
-          </select>
-          <output id="trait3">None Selected</output>
-        </div>
+        <div>
+          <label for="trait3">Personality 3: </label>
+          <form autocomplete="off" action="/action_page.php">
+            <div class="autocomplete" style="width:300px;">
+              <input id="trait3_select" type="text" placeholder="e.g. Friendly, Loyal, etc.">
+            </div>
+          </form>
 
         </div>
 
         <h2>How much time can you spend with your dog?</h2>
         <div class="dropdown">
           <label for="time">Time: </label>
-          <select name="time" id="time_select" onchange="updateTime(this.value);">
+          <select name="time" id="time_select">
 
             <option value="1">Minimal time (1 hr/day)</option>
             <option value="2" selected>Reasonable time (2 hrs/day)</option>
@@ -86,7 +61,7 @@
           <h2>How much space do you have?</h2>
           <div class="dropdown">
             <label for="space">Space: </label>
-            <select name="space" id="space_select" onchange="updateSpace(this.value);">
+            <select name="space" id="space_select">
 
               <option value="Small">Small</option>
               <option value="Medium" selected>Medium</option>
@@ -103,8 +78,7 @@
   </div>
 
   <script>
-    var personalities = ["Independent", "Playful", "Affectionate", "Friendly", "Intelligent", "Loyal", "Active", "Smart", "Outgoing"]
-
+ var personalities = ["Independent", "Playful", "Affectionate", "Friendly", "Intelligent", "Loyal", "Active", "Smart", "Outgoing"]
     function answerBoxTemplate(
       breed_name,
       trainability,
@@ -178,9 +152,9 @@
         new URLSearchParams({
           time: document.getElementById("time_select").value,
           space: document.getElementById("space_select").value,
-          trait1: document.getElementById("trait1_select").value,
-          trait2: document.getElementById("trait2_select").value,
-          trait3: document.getElementById("trait3_select").value,
+          trait1: trait1value,
+          trait2: trait2value,
+          trait3: trait3value,
         })
       )
       
