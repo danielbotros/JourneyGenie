@@ -18,7 +18,7 @@ from sklearn.preprocessing import normalize
 os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..", os.curdir))
 
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = "perfectpup_4300!"
+MYSQL_USER_PASSWORD = "admin123"
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "dogdb"
 INDEX_TO_BREED = {}
@@ -72,7 +72,7 @@ def svd(query):
     DOCS_COMPRESSED_NORMED = docs_compressed_normed
     index_search_results = []
 
-    for i, score in cossim_with_svd(query_vector, docs_compressed_normed, v_trans, k=30): 
+    for i, score in cossim_with_svd(query_vector, docs_compressed_normed, v_trans, k=30):
         print("breed: ", INDEX_TO_BREED[i], " score: ", score)
         index_search_results.append(INDEX_TO_BREED[i])
     print()
@@ -121,7 +121,7 @@ def dog_search():
         results = results + tuple(breed_name)
     print("results: ", results)
 
-    query_sql = f"""SELECT breed_name, descript, temperament,
+    query_sql = f"""SELECT breed_name, descript1, temperament1,
     energy_level_value, trainability_value, grooming_frequency_value,
     max_weight, max_height FROM breeds WHERE breed_name IN {results}"""
     data = mysql_engine.query_selector(query_sql)
@@ -190,13 +190,15 @@ def tokenize(text):
 
 def preprocess():
 
-    query_sql = f"""SELECT descript, temperament FROM breeds"""
+    query_sql = f"""SELECT descript1, temperament1, descript2, temperament2 FROM breeds"""
     data = mysql_engine.query_selector(query_sql)
     cleaned_data = []
-    for descript, temperament in list(data):
+    for descript1, temperament1, descript2, temperament2 in list(data):
         breed_data = []
-        breed_data.append(tokenize(descript))
-        breed_data.append(tokenize(temperament))
+        breed_data.append(tokenize(descript1))
+        breed_data.append(tokenize(temperament1))
+        breed_data.append(tokenize(descript2))
+        breed_data.append(tokenize(temperament2))
         breed_data = [item for sublist in breed_data for item in sublist]
         cleaned_data.append(breed_data)
     return cleaned_data
@@ -204,21 +206,29 @@ def preprocess():
 
 def get_data():
     # TODO: does this get new descriptions and temperamnents?
-    query_sql = f"""SELECT descript, temperament FROM breeds"""
+    query_sql = f"""SELECT descript1, temperament1, descript2, temperament2 FROM breeds"""
     data = mysql_engine.query_selector(query_sql)
     descript_temp_list = []
     # print(list(data))
-    for descript, temperament in list(data):
+    for descript1, temperament1, descript2, temperament2 in list(data):
         breed_data = ""
-        if descript != None:
-            descript = descript.lower()
-            breed_data += descript
+        if descript1 != None:
+            descript1 = descript1.lower()
+            breed_data += descript1
 
-        if temperament != None:
-            temperament = temperament.lower()
-            breed_data += temperament
+        if descript2 != None:
+            descript2 = descript2.lower()
+            breed_data += descript2
+
+        if temperament1 != None:
+            temperament1 = temperament1.lower()
+            breed_data += temperament1
+
+        if temperament2 != None:
+            temperament2 = temperament2.lower()
+            breed_data += temperament2
+
         descript_temp_list.append(breed_data)
-        print("temperament: ", temperament)
 
     return descript_temp_list
 
