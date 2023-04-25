@@ -15,7 +15,7 @@ from sklearn.preprocessing import normalize
 os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..", os.curdir))
 
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = ""
+MYSQL_USER_PASSWORD = "perfectpup_4300!"
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "dogdb"
 INDEX_TO_BREED = {}
@@ -90,8 +90,13 @@ def dog_search():
 
     direct_search_results = direct_search(time, space)
 
-    combined_breeds = merge_results(
-        direct_search_results, index_search_results)
+    combined_breeds = []
+    print("no trait input query: ", query)
+    if (query != ""):
+        combined_breeds = merge_results(
+            direct_search_results, index_search_results)
+    else:
+        combined_breeds = direct_search_results
 
     results = ()
     for breed_name in combined_breeds:
@@ -118,7 +123,7 @@ def merge_results(direct_results, index_results):
         for res in index_results:
             matches.add(res)
 
-    return list(matches)[: 10]
+    return list(matches)[: 20]
 
 
 def direct_search(time, space):
