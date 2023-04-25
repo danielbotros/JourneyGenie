@@ -83,7 +83,7 @@ def dog_search():
     trait3 = request.args.get("trait3")
     # TODO: make sure same trait not inputted twice
     query = trait1 + " " + trait2 + " " + trait3
-    print("query: ", query)
+    empty_query = trait1 == "" and trait2 == "" and trait3 == ""
 
     print("Using SVD:")
     index_search_results = svd(query)
@@ -91,11 +91,13 @@ def dog_search():
     direct_search_results = direct_search(time, space)
 
     combined_breeds = []
-    print("no trait input query: ", query)
-    if (query != ""):
+    print("trait: ", query, " time: ", time, " space: ", space)
+    if (not empty_query):
         combined_breeds = merge_results(
             direct_search_results, index_search_results)
     else:
+        print("no trait input query: ")
+
         combined_breeds = direct_search_results
 
     results = ()
@@ -140,7 +142,12 @@ def direct_search(time, space):
 
     """
     data = mysql_engine.query_selector(query_sql)
-    return list(data)
+    data = list(data)
+    for i, breed in enumerate(data):
+        print("direct search breed: ", breed)
+    print("size of direct search ", len(data))
+    print("direct search results: ", data)
+    return data
 
 
 def compute_space(space):
