@@ -95,18 +95,19 @@
     ];
     function answerBoxTemplate(
       breed_name,
+      img,
       trainability,
       weight,
       description,
       traits,
       energy_level,
       grooming_frequency,
-      height
+      height,
+      hypoallergenic
     ) {
       return `
         <div class="block">
-          // tests that the img tag correctly displays a random dog image
-            <img src="https://www.dogbreedslist.info/uploads/dog-pictures/american-akita-2.jpg" alt="American Akita" width="80%" height="80%">
+            <img src=${img} width="80%" height="80%">
             <h3 class='breed-name'>${breed_name}</h3>
             <h4 class='breed-traits'> <em>${traits}</em></h4>
               <div class="row2">
@@ -180,13 +181,15 @@
                 let tempDiv = document.createElement("div");
                 tempDiv.innerHTML = answerBoxTemplate(
                   (breed_name = row.breed_name),
+                  (img = row.img),
                   (trainability = row.trainability_value),
                   (weight = row.max_weight),
                   (description = row.descript),
                   (traits = row.temperament),
                   (energy_level = row.energy_level_value),
                   (grooming_frequency = row.grooming_frequency_value),
-                  (height = row.max_height)
+                  (height = row.max_height),
+                  (height = row.hypoallergenic)
                 );
                 document.getElementById("answer-box").appendChild(tempDiv);
               })

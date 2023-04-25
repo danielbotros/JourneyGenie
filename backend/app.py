@@ -15,7 +15,7 @@ from sklearn.preprocessing import normalize
 os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..", os.curdir))
 
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = "dirtbikesock146"
+MYSQL_USER_PASSWORD = ""
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "dogdb"
 INDEX_TO_BREED = {}
@@ -98,12 +98,12 @@ def dog_search():
         results = results + tuple(breed_name)
     print("results: ", results)
 
-    query_sql = f"""SELECT breed_name, descript1, temperament1,
+    query_sql = f"""SELECT breed_name, img, descript1, temperament1,
     energy_level_value, trainability_value, grooming_frequency_value,
-    max_weight, max_height FROM breeds WHERE breed_name IN {results}"""
+    max_weight, max_height, hypoallergenic FROM breeds WHERE breed_name IN {results}"""
     data = mysql_engine.query_selector(query_sql)
-    keys = ["breed_name", "descript", "temperament", "energy_level_value", "trainability_value",
-            "grooming_frequency_value", "max_weight", "max_height"]
+    keys = ["breed_name", "img", "descript", "temperament", "energy_level_value", "trainability_value",
+            "grooming_frequency_value", "max_weight", "max_height", "hypoallergenic"]
     return json.dumps([dict(zip(keys, i)) for i in data])
 
 
