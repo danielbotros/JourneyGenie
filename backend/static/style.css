@@ -1,11 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat&display=swap');
+
 body{
-    font-family: Monaco;
-    margin-left: 40px;
-    margin-right:40px;
- }
+    font-family: 'Caveat', cursive;
+    height: 100%;
+}
+h1, h2, h3{
+    font-family: 'Caveat', cursive;
+}
  #answer-box p{
     font-size:.9em;
-    font-family:Georgia, 'Times New Roman', Times, serif
+    font-family:Georgia, 'Times New Roman', Times, serif;
+    flex: 1;
  }
 .row{
     display: flex;
@@ -29,7 +34,39 @@ h4{
 .col{
     display: flex;
     flex-direction: column;
-    width:550px;
+}
+.side{
+    display: flex;
+    flex-flow: column;
+    height: 100vh;
+    border-right: brown solid 2px;
+    padding: 0px 30px 100px 30px;
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    width: 450px;
+    background-color: #FFF9F5;
+}
+button{
+    background-color: brown;
+    border: 2px solid #422800;
+    border-radius: 30px;
+    box-shadow: #422800 4px 4px 0 0;
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 18px;
+    padding: 0 9px;
+    line-height: 40px;
+    text-align: center;
+    text-decoration: none;
+   
+}
+select{
+    padding: 6px;
+    font-size: 16px;
+    border-radius: 10px;
+
 }
 #bigdog {
     margin-bottom:0px;
@@ -70,9 +107,11 @@ h4{
     display:flex;
     flex-direction: row;
     flex-wrap: wrap;
+    flex: 1;
+    justify-content: space-evenly;
 }
 .block{
-    width:350px;
+    width:400px;
     padding: 20px;
     border: 2px dotted black;
     border-radius: 20px;

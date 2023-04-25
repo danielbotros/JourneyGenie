@@ -3,28 +3,27 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Kanit&family=Montserrat&family=Open+Sans:wght@500&display=swap"
-  rel="stylesheet" />
+<link
+  href="https://fonts.googleapis.com/css2?family=Kanit&family=Montserrat&family=Open+Sans:wght@500&display=swap"
+  rel="stylesheet"
+/>
 
 <body>
   <div class="full-body-container">
-    <div class="row">
-      <div class="col">
-        <h1 id="bigdog">🐕</h1>
-        <h1>Find your Perfect Pup! 🐾</h1>
-        <p>
-          Help us find your perfect pup, in order to see results, make sure to
-          select a preference for every option!
-        </p>
-      </div>
-      <div class="col">
+    <div class="row2">
+      <div class="side">
+        <h1>🐕 Find your Perfect Pup! 🐾</h1>
         <h2>What personality traits do you value about a dog?</h2>
 
         <div>
           <label for="trait1">Personality 1: </label>
           <form autocomplete="off" action="/action_page.php">
-            <div class="autocomplete" style="width:300px;">
-              <input id="trait1_select" type="text" placeholder="e.g. Friendly, Loyal, etc.">
+            <div class="autocomplete" style="width: 300px">
+              <input
+                id="trait1_select"
+                type="text"
+                placeholder="e.g. Friendly, Loyal, etc."
+              />
             </div>
           </form>
         </div>
@@ -32,8 +31,12 @@
         <div>
           <label for="trait2">Personality 2: </label>
           <form autocomplete="off" action="/action_page.php">
-            <div class="autocomplete" style="width:300px;">
-              <input id="trait2_select" type="text" placeholder="e.g. Friendly, Loyal, etc.">
+            <div class="autocomplete" style="width: 300px">
+              <input
+                id="trait2_select"
+                type="text"
+                placeholder="e.g. Friendly, Loyal, etc."
+              />
             </div>
           </form>
         </div>
@@ -41,18 +44,20 @@
         <div>
           <label for="trait3">Personality 3: </label>
           <form autocomplete="off" action="/action_page.php">
-            <div class="autocomplete" style="width:300px;">
-              <input id="trait3_select" type="text" placeholder="e.g. Friendly, Loyal, etc.">
+            <div class="autocomplete" style="width: 300px">
+              <input
+                id="trait3_select"
+                type="text"
+                placeholder="e.g. Friendly, Loyal, etc."
+              />
             </div>
           </form>
-
         </div>
 
         <h2>How much time can you spend with your dog?</h2>
         <div class="dropdown">
-          <label for="time">Time: </label>
+          <label for="time"> </label>
           <select name="time" id="time_select">
-
             <option value="1">Minimal time (1 hr/day)</option>
             <option value="2" selected>Reasonable time (2 hrs/day)</option>
             <option value="3">A lot of time (2+ hrs/day)</option>
@@ -60,9 +65,8 @@
 
           <h2>How much space do you have?</h2>
           <div class="dropdown">
-            <label for="space">Space: </label>
+            <label for="space"> </label>
             <select name="space" id="space_select">
-
               <option value="Small">Small</option>
               <option value="Medium" selected>Medium</option>
               <option value="Large">Large</option>
@@ -73,12 +77,22 @@
         <h2></h2>
         <button type="button" onClick="filterText();">Submit</button>
       </div>
+      <div id="answer-box"></div>
     </div>
-    <div id="answer-box"></div>
   </div>
 
   <script>
- var personalities = ["Independent", "Playful", "Affectionate", "Friendly", "Intelligent", "Loyal", "Active", "Smart", "Outgoing"]
+    var personalities = [
+      "Independent",
+      "Playful",
+      "Affectionate",
+      "Friendly",
+      "Intelligent",
+      "Loyal",
+      "Active",
+      "Smart",
+      "Outgoing",
+    ];
     function answerBoxTemplate(
       breed_name,
       trainability,
@@ -132,13 +146,13 @@
 
       // NEED TO ADDRESS AND REPLACE THIS
       if (!personalities.includes(trait1value)) {
-        trait1value = "Independent"
+        trait1value = "Independent";
       }
       if (!personalities.includes(trait2value)) {
-        trait2value = "Independent"
+        trait2value = "Independent";
       }
       if (!personalities.includes(trait3value)) {
-        trait3value = "Independent"
+        trait3value = "Independent";
       }
 
       console.log("time: ", document.getElementById("time_select").value);
@@ -149,47 +163,51 @@
 
       fetch(
         "/perfectpupper?" +
-        new URLSearchParams({
-          time: document.getElementById("time_select").value,
-          space: document.getElementById("space_select").value,
-          trait1: trait1value,
-          trait2: trait2value,
-          trait3: trait3value,
-        })
+          new URLSearchParams({
+            time: document.getElementById("time_select").value,
+            space: document.getElementById("space_select").value,
+            trait1: trait1value,
+            trait2: trait2value,
+            trait3: trait3value,
+          })
       )
-      
         .then((response) => response.json())
         .then((data) =>
           data.length == 0
             ? (document.getElementById("answer-box").innerHTML = noResults())
             : data.forEach((row) => {
-              console.log("row: ", row);
-              let tempDiv = document.createElement("div");
-              tempDiv.innerHTML = answerBoxTemplate(
-                (breed_name = row.breed_name),
-                (trainability = row.trainability_value),
-                (weight = row.max_weight),
-                (description = row.descript),
-                (traits = row.temperament),
-                (energy_level = row.energy_level_value),
-                (grooming_frequency = row.grooming_frequency_value),
-                (height = row.max_height)
-              );
-              document.getElementById("answer-box").appendChild(tempDiv);
-            })
+                console.log("row: ", row);
+                let tempDiv = document.createElement("div");
+                tempDiv.innerHTML = answerBoxTemplate(
+                  (breed_name = row.breed_name),
+                  (trainability = row.trainability_value),
+                  (weight = row.max_weight),
+                  (description = row.descript),
+                  (traits = row.temperament),
+                  (energy_level = row.energy_level_value),
+                  (grooming_frequency = row.grooming_frequency_value),
+                  (height = row.max_height)
+                );
+                document.getElementById("answer-box").appendChild(tempDiv);
+              })
         );
     }
-    
+
     function autocomplete(inp, arr) {
       /*the autocomplete function takes two arguments,
       the text field element and an array of possible autocompleted values:*/
       var currentFocus;
       /*execute a function when someone writes in the text field:*/
       inp.addEventListener("input", function (e) {
-        var a, b, i, val = this.value;
+        var a,
+          b,
+          i,
+          val = this.value;
         /*close any already open lists of autocompleted values*/
         closeAllLists();
-        if (!val) { return false; }
+        if (!val) {
+          return false;
+        }
         currentFocus = -1;
         /*create a DIV element that will contain the items (values):*/
         a = document.createElement("DIV");
@@ -204,7 +222,8 @@
             /*create a DIV element for each matching element:*/
             b = document.createElement("DIV");
             /*make the matching letters bold:*/
-            b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+            b.innerHTML =
+              "<strong>" + arr[i].substr(0, val.length) + "</strong>";
             b.innerHTML += arr[i].substr(val.length);
             /*insert a input field that will hold the current array item's value:*/
             b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
@@ -230,7 +249,8 @@
           currentFocus++;
           /*and and make the current item more visible:*/
           addActive(x);
-        } else if (e.keyCode == 38) { //up
+        } else if (e.keyCode == 38) {
+          //up
           /*If the arrow UP key is pressed,
           decrease the currentFocus variable:*/
           currentFocus--;
@@ -251,7 +271,7 @@
         /*start by removing the "active" class on all items:*/
         removeActive(x);
         if (currentFocus >= x.length) currentFocus = 0;
-        if (currentFocus < 0) currentFocus = (x.length - 1);
+        if (currentFocus < 0) currentFocus = x.length - 1;
         /*add class "autocomplete-active":*/
         x[currentFocus].classList.add("autocomplete-active");
       }
@@ -305,12 +325,12 @@
     font-size: 16px;
   }
 
-  input[type=text] {
+  input[type="text"] {
     background-color: #f1f1f1;
     width: 100%;
   }
 
-  input[type=submit] {
+  input[type="submit"] {
     background-color: DodgerBlue;
     color: #fff;
   }
