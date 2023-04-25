@@ -27,34 +27,34 @@ CREATE TABLE breeds(
   demeanor_category varchar(23)
 );
 
--- CREATE TABLE breeds(
---   breed_name varchar(34),
---   descript1 varchar(2235),
---   temperament1 varchar(2235),
---   img varchar(2235),
---   price varchar(2235),
---   hypoallergenic varchar(2235),
---   descript2 varchar(2235),
---   temperament2 varchar(2235),
---   popularity float, 
---   min_height float,
---   max_height float,
---   min_weight float,
---   max_weight float,
---   min_expectancy float,
---   max_expectancy float,
---   dog_group varchar(24),
---   grooming_frequency_value float,
---   grooming_frequency_category varchar(25),
---   shedding_value float,
---   shedding_category varchar(10),
---   energy_level_value float,
---   energy_level_category varchar(22),
---   trainability_value float,
---   trainability_category varchar(15),
---   demeanor_value float,
---   demeanor_category varchar(23)
--- );
+CREATE TABLE breeds(
+  breed_name varchar(34),
+  descript1 varchar(2235),
+  temperament1 varchar(2235),
+  img varchar(2235),
+  price varchar(2235),
+  hypoallergenic varchar(2235),
+  descript2 varchar(2235),
+  temperament2 varchar(2235),
+  popularity float, 
+  min_height float,
+  max_height float,
+  min_weight float,
+  max_weight float,
+  min_expectancy float,
+  max_expectancy float,
+  dog_group varchar(24),
+  grooming_frequency_value float,
+  grooming_frequency_category varchar(25),
+  shedding_value float,
+  shedding_category varchar(10),
+  energy_level_value float,
+  energy_level_category varchar(22),
+  trainability_value float,
+  trainability_category varchar(15),
+  demeanor_value float,
+  demeanor_category varchar(23)
+);
 
 INSERT INTO breeds VALUE('Affenpinscher','The Affens apish look has been described many ways. Theyve been called monkey dogs and ape terriers. The French say diablotin moustachu (mustached little devil), and Star Wars fans argue whether they look more like Wookies or Ewoks.Standing less than a foot tall, these sturdy terrier-like dogs approach life with great confidence. This isnt a breed you train, a professional dog handler tells us, Hes like a human. You befriend him. The dense, harsh coat is described as neat but shaggy and comes in several colors; the gait is light and confident. They can be willful and domineering, but mostly Affens are loyal, affectionate, and always entertaining. Affen people say they love being owned by their little monkey dogs. The Affenpinscher: loyal, curious, and famously amusing; this almost-human toy dog is fearless out of all proportion to his size. As with all great comedians, its the Affenpinschers apparent seriousness of purpose that makes his antics all the more amusing.','Confident, Famously Funny, Fearless','148','22.86','29.21','3.17514659','4.535923700000001',12.0,15.0,'Toy Group',0.6,'2-3 Times a Week Brushing',0.6,'Seasonal',0.6,'Regular Exercise',0.8,'Easy Training',1.0,'Outgoing');
 INSERT INTO breeds VALUE('Afghan Hound','The Afghan Hound is an ancient breed, his whole appearance one of dignity and aloofness  his eyes gazing into the distance as if in memory of ages past. An intelligent and independent mind, his whole appearance one of dignity and style. To his own he is devoted and loyal with a charming and lively personality. The Afghan Hound is an athlete capable of immense speed and requires a large fenced in yard and exercise daily.Since ancient times, Afghan Hounds have been famous for their elegant beauty. But the thick, silky, flowing coat that is the breeds crowning glory isnt just for show  it served as protection from the harsh climate in mountainous regions where Afghans originally earned their keep. Beneath the Afghans glamorous exterior is a powerful, agile hound  standing as high as 27 inches at the shoulder  built for a long days hunt. Their huge paw-pads acted as shock absorbers on their homelands punishing terrain.The Afghan Hound is a special breed for special people. A breed expert writes, Its not the breed for all would-be dog owners, but where the dog and owner combination is right, no animal can equal the Afghan Hound as a pet. The Afghan Hound is an aloof and dignified aristocrat of sublime beauty. Despite his regal appearance, he is known for his profound loyalty, sensitive nature, and absolute love for those he calls his own.','Dignified, Profoundly Loyal, Aristocratic','113','63.5','68.58','22.6796185','27.2155422',12.0,15.0,'Hound Group',0.8,'Daily Brushing',0.2,'Infrequent',0.8,'Energetic',0.2,'May be Stubborn',0.2,'Aloof/Wary');
