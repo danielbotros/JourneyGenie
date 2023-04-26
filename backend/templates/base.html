@@ -98,29 +98,41 @@
       img,
       trainability,
       weight,
+      height,
       description,
-      traits,
+      temperament2,
       energy_level,
       grooming_frequency,
-      height,
       hypoallergenic
     ) {
       return `
         <div class="block">
-            <img src=${img} width="80%" height="80%">
-            <h3 class='breed-name'>${breed_name}</h3>
-            <h4 class='breed-traits'> <em>${traits}</em></h4>
+          <div class = "row">
+            <div class="percent">
+                <h1>80%</h1>
+              </div>
+            <img src=${img} width="30%" height="30%">
+            <div class="col">
+              <div class = "row2">
+                <h2 class='breed-name'>${breed_name}</h2>
+                <h2 class='breed-name'> <em>${temperament2}</em></h2>
+                </div>
               <div class="row2">
                 <p class='breed-traits'>H: ${Math.round(height, 2)} cm</p>
                 <p class='breed-traits'>W: ${Math.round(weight, 2)} kg</p>
-                <p class='breed-traits'>Energy: ${energy_level}</p>
-
+                <p class='breed-traits'>${hypoallergenic}</p>
               </div>
               <div class="row2">
                 <p class='breed-traits'>Grooming: ${grooming_frequency}</p>
+                <p class='breed-traits'>Energy: ${energy_level}</p>
                 <p class='breed-traits'>Trainability: ${trainability}</p>
                 </div>
-              <p class='breed-traits'>${description}</p>
+                <details>
+                  <summary>Click to open description</summary>
+                <p class='breed-traits'>${description}</p>
+              </details>
+              </div>
+              </div>
             </div>
             `;
     }
@@ -184,12 +196,12 @@
                   (img = row.img),
                   (trainability = row.trainability_value),
                   (weight = row.max_weight),
-                  (description = row.descript),
-                  (traits = row.temperament),
+                  (height = row.max_height),
+                  (description = row.descript1),
+                  (temperament2 = row.temperament2),
                   (energy_level = row.energy_level_value),
                   (grooming_frequency = row.grooming_frequency_value),
-                  (height = row.max_height),
-                  (height = row.hypoallergenic)
+                  (hypoallergenic = row.hypoallergenic)
                 );
                 document.getElementById("answer-box").appendChild(tempDiv);
               })
