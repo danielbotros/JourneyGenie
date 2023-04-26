@@ -7,7 +7,6 @@ from flask import Flask, render_template, request
 from flask_cors import CORS
 from helpers.MySQLDatabaseHandler import MySQLDatabaseHandler
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.decomposition import TruncatedSVD
 from scipy.sparse.linalg import svds
 from sklearn.preprocessing import normalize
 
@@ -241,4 +240,4 @@ def format_breeds(raw_results):
     return results
 
 
-app.run(debug=True)
+# app.run(debug=True)
