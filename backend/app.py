@@ -15,7 +15,7 @@ from sklearn.preprocessing import normalize
 os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..", os.curdir))
 
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = ""
+MYSQL_USER_PASSWORD = "perfectpup_4300!"
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "dogdb"
 INDEX_TO_BREED = {}
@@ -83,15 +83,22 @@ def dog_search():
     trait3 = request.args.get("trait3")
     # TODO: make sure same trait not inputted twice
     query = trait1 + " " + trait2 + " " + trait3
-    print("query: ", query)
+    empty_query = trait1 == "" and trait2 == "" and trait3 == ""
 
     print("Using SVD:")
     index_search_results = svd(query)
 
     direct_search_results = direct_search(time, space)
 
-    combined_breeds = merge_results(
-        direct_search_results, index_search_results)
+    combined_breeds = []
+    print("trait: ", query, " time: ", time, " space: ", space)
+    if (not empty_query):
+        combined_breeds = merge_results(
+            direct_search_results, index_search_results)
+    else:
+        print("no trait input query: ")
+
+        combined_breeds = direct_search_results
 
     results = ()
     for breed_name in combined_breeds:
@@ -117,7 +124,7 @@ def merge_results(direct_results, index_results):
         for res in index_results:
             matches.add(res)
 
-    return list(matches)[: 10]
+    return list(matches)[: 20]
 
 
 def direct_search(time, space):
@@ -134,7 +141,12 @@ def direct_search(time, space):
 
     """
     data = mysql_engine.query_selector(query_sql)
-    return list(data)
+    data = list(data)
+    for i, breed in enumerate(data):
+        print("direct search breed: ", breed)
+    print("size of direct search ", len(data))
+    print("direct search results: ", data)
+    return data
 
 
 def compute_space(space):
