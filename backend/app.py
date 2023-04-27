@@ -14,7 +14,7 @@ from sklearn.preprocessing import normalize
 os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..", os.curdir))
 
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = ""
+MYSQL_USER_PASSWORD = "admin123"
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "dogdb"
 INDEX_TO_BREED = {}
@@ -104,12 +104,16 @@ def dog_search():
         results = results + tuple(breed_name)
     print("results: ", results)
 
-    query_sql = f"""SELECT breed_name, img, trainability_value, max_weight, max_height, descript1, temperament2,
-    energy_level_value, grooming_frequency_value, hypoallergenic FROM breeds WHERE breed_name IN {results}"""
-    data = mysql_engine.query_selector(query_sql)
+    all_data = []
+    for i in range(len(results)):
+        query_sql = f"""SELECT breed_name, img, trainability_value, max_weight, max_height, descript1, temperament2,
+    energy_level_value, grooming_frequency_value, hypoallergenic FROM breeds WHERE breed_name = '{str(results[i])}'"""
+        all_data.append(list(mysql_engine.query_selector(query_sql))[0])
+
     keys = ["breed_name", "img", "trainability_value", "max_weight", "max_height", "descript1", "temperament2", "energy_level_value",
             "grooming_frequency_value",  "hypoallergenic"]
-    return json.dumps([dict(zip(keys, i)) for i in data])
+
+    return json.dumps([dict(zip(keys, i)) for i in all_data])
 
 
 def merge_results(direct_results, index_results):
