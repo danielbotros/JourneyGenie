@@ -108,13 +108,14 @@
       temperament2,
       energy_level,
       grooming_frequency,
-      hypoallergenic
+      hypoallergenic, 
+      score
     ) {
       return `
         <div class="block">
           <div class = "row">
             <div class="percent">
-                <h2>80%</h2>
+                <h2>${score}%</h2>
               </div>
             <img src=${img} width="30%" height="30%">
             <div class="col">
@@ -206,7 +207,8 @@
                   (temperament2 = row.temperament2),
                   (energy_level = row.energy_level_value),
                   (grooming_frequency = row.grooming_frequency_value),
-                  (hypoallergenic = row.hypoallergenic)
+                  (hypoallergenic = row.hypoallergenic),
+                  (score = row.score)
                 );
                 document.getElementById("answer-box").appendChild(tempDiv);
               })
