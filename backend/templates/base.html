@@ -3,10 +3,8 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link
-  href="https://fonts.googleapis.com/css2?family=Kanit&family=Montserrat&family=Open+Sans:wght@500&display=swap"
-  rel="stylesheet"
-/>
+<link href="https://fonts.googleapis.com/css2?family=Kanit&family=Montserrat&family=Open+Sans:wght@500&display=swap"
+  rel="stylesheet" />
 
 <body>
   <div class="full-body-container">
@@ -15,15 +13,41 @@
         <h1>🐕 Find your Perfect Pup! 🐾</h1>
         <h3>What personality traits do you value about a dog?</h3>
 
+
+
+        <head>
+          <link rel="stylesheet" href="style.css">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/thinline.css">
+        </head>
+
+
+
+        <div>
+          <div class="content">
+            <form autocomplete="off" action="/action_page.php">
+              <div class="autocomplete" style="width: 300px">
+                <ul><input id="traits_select" type="text" spellcheck="false" placeholder="e.g. Friendly, Loyal, etc.">
+                </ul>
+              </div>
+            </form>
+          </div>
+          <div class="details">
+            <p><span></span></p>
+            <!-- <button>Remove All</button> -->
+          </div>
+        </div>
+
+        <script src="script.js"></script>
+
+
+
+        <!-- 
         <div>
           <label for="trait1">Personality 1: </label>
           <form autocomplete="off" action="/action_page.php">
             <div class="autocomplete" style="width: 300px">
-              <input
-                id="trait1_select"
-                type="text"
-                placeholder="e.g. Friendly, Loyal, etc."
-              />
+              <input id="trait1_select" type="text" placeholder="e.g. Friendly, Loyal, etc." />
             </div>
           </form>
         </div>
@@ -32,11 +56,7 @@
           <label for="trait2">Personality 2: </label>
           <form autocomplete="off" action="/action_page.php">
             <div class="autocomplete" style="width: 300px">
-              <input
-                id="trait2_select"
-                type="text"
-                placeholder="e.g. Friendly, Loyal, etc."
-              />
+              <input id="trait2_select" type="text" placeholder="e.g. Friendly, Loyal, etc." />
             </div>
           </form>
         </div>
@@ -45,14 +65,10 @@
           <label for="trait3">Personality 3: </label>
           <form autocomplete="off" action="/action_page.php">
             <div class="autocomplete" style="width: 300px">
-              <input
-                id="trait3_select"
-                type="text"
-                placeholder="e.g. Friendly, Loyal, etc."
-              />
+              <input id="trait3_select" type="text" placeholder="e.g. Friendly, Loyal, etc." />
             </div>
           </form>
-        </div>
+        </div> -->
 
         <h3>How long can you be with your dog?</h3>
         <div class="dropdown">
@@ -72,8 +88,7 @@
               <option value="Large">Large</option>
             </select>
           </div>
-          <label class="container"
-            >Only include hypoallergenic dogs
+          <label class="container">Only include hypoallergenic dogs
             <input type="checkbox" />
             <span class="checkmark"></span>
           </label>
@@ -87,6 +102,61 @@
   </div>
 
   <script>
+    const ul = document.querySelector("ul"),
+      input = document.querySelector("input"),
+      tagNumb = document.querySelector(".details span");
+
+    let maxTags = 10,
+      tags = [];
+    countTags();
+    createTag();
+
+    function countTags() {
+      input.focus();
+      // tagNumb.innerText = maxTags - tags.length;
+    }
+
+    function createTag() {
+      ul.querySelectorAll("li").forEach(li => li.remove());
+      tags.slice().reverse().forEach(tag => {
+        let liTag = `<li>${tag} <i class="uit uit-multiply" onclick="remove(this, '${tag}')"></i></li>`;
+        ul.insertAdjacentHTML("afterbegin", liTag);
+      });
+      countTags();
+    }
+
+    function remove(element, tag) {
+      let index = tags.indexOf(tag);
+      tags = [...tags.slice(0, index), ...tags.slice(index + 1)];
+      element.parentElement.remove();
+      countTags();
+    }
+
+    function addTag(e) {
+      if (e.key == "Enter") {
+        if (personalities.includes(e.target.value)) {
+          let tag = e.target.value.replace(/\s+/g, ' ');
+          if (tag.length > 1 && !tags.includes(tag)) {
+            if (tags.length < 10) {
+              tag.split(',').forEach(tag => {
+                tags.push(tag);
+                createTag();
+              });
+            }
+          }
+          e.target.value = "";
+        }
+      }
+    }
+
+    input.addEventListener("keyup", addTag);
+    const removeBtn = document.querySelector(".details button");
+    removeBtn.addEventListener("click", () => {
+      tags.length = 0;
+      ul.querySelectorAll("li").forEach(li => li.remove());
+      countTags();
+    });
+
     var personalities = [
       "Independent",
       "Playful",
@@ -108,7 +178,7 @@
       temperament2,
       energy_level,
       grooming_frequency,
-      hypoallergenic, 
+      hypoallergenic,
       score
     ) {
       return `
@@ -159,9 +229,73 @@
     function filterText() {
       document.getElementById("answer-box").innerHTML = "";
 
-      var trait1value = document.getElementById("trait1_select").value;
-      var trait2value = document.getElementById("trait2_select").value;
-      var trait3value = document.getElementById("trait3_select").value;
+      // var trait1value = document.getElementById("trait1_select").value;
+      // var trait2value = document.getElementById("trait2_select").value;
+      // var trait3value = document.getElementById("trait3_select").value;
+
+
+      // if (tags.length == 1) {
+      //   console.log(tags[0]);
+      //   var trait1value = tags[0];
+      //   console.log(trait1value);
+      // } else if (tags.length == 2) {
+      //   console.log(tags[0]);
+      //   console.log(tags[1]);
+      //   var trait1value = tags[0];
+      //   var trait2value = tags[1];
+      //   console.log(trait1value);
+      //   console.log(trait2value);
+      // } else if (tags.length == 3) {
+      //   console.log(tags[0]);
+      //   console.log(tags[1]);
+      //   console.log(tags[2]);
+      //   var trait1value = tags[0];
+      //   var trait2value = tags[1];
+      //   var trait3value = tags[2];
+      //   console.log(trait1value);
+      //   console.log(trait2value);
+      //   console.log(trait3value);
+      // }
+      // if (tags.length >= 1) {
+      //   var trait1value = tags[0];
+      //   if (tags.length >= 2) {
+      //     var trait2value = tags[1];
+      //     if (tags.length >= 3) {
+      //       var trait3value = tags[2];
+      //       if (tags.length >= 4) {
+      //         var trait1value = tags[3];
+      //         if (tags.length >= 5) {
+      //           var trait1value = tags[4];
+      //           if (tags.length >= 6) {
+      //             var trait1value = tags[5];
+
+      //           }
+      //         }
+      //       }
+      //     }
+      //   }
+      // } else if (tags.length == 2) {
+      //   console.log(tags[0]);
+      //   console.log(tags[1]);
+      //   var trait1value = tags[0];
+      //   var trait2value = tags[1];
+      //   console.log(trait1value);
+      //   console.log(trait2value);
+      // } else if (tags.length == 3) {
+      //   console.log(tags[0]);
+      //   console.log(tags[1]);
+      //   console.log(tags[2]);
+      //   var trait1value = tags[0];
+      //   var trait2value = tags[1];
+      //   var trait3value = tags[2];
+      //   console.log(trait1value);
+      //   console.log(trait2value);
+      //   console.log(trait3value);
+      // }
+      // var trait1value = document.getElementById("traits")[0].value;
+      // console.log(trait1value)
+      // var trait2value = document.getElementById("traits")[1].value;
+      // var trait3value = document.getElementById("traits")[2].value;
 
       // // NEED TO ADDRESS AND REPLACE THIS
       // if (!personalities.includes(trait1value)) {
@@ -180,38 +314,43 @@
       console.log("trait2: ", trait2value);
       console.log("trait3: ", trait3value);
 
+      console.log(tags);
+
       fetch(
         "/perfectpupper?" +
-          new URLSearchParams({
-            time: document.getElementById("time_select").value,
-            space: document.getElementById("space_select").value,
-            trait1: trait1value,
-            trait2: trait2value,
-            trait3: trait3value,
-          })
+        new URLSearchParams({
+          time: document.getElementById("time_select").value,
+          space: document.getElementById("space_select").value,
+          traits: tags,
+          // trait2: trait2value,
+          // trait3: trait3value,
+          // trait1: tags[0],
+          // trait2: tags[1],
+          // trait3: tags[2],
+        })
       )
         .then((response) => response.json())
         .then((data) =>
           data.length == 0
             ? (document.getElementById("answer-box").innerHTML = noResults())
             : data.forEach((row) => {
-                console.log("row: ", row);
-                let tempDiv = document.createElement("div");
-                tempDiv.innerHTML = answerBoxTemplate(
-                  (breed_name = row.breed_name),
-                  (img = row.img),
-                  (trainability = row.trainability_value),
-                  (weight = row.max_weight),
-                  (height = row.max_height),
-                  (description = row.descript1),
-                  (temperament2 = row.temperament2),
-                  (energy_level = row.energy_level_value),
-                  (grooming_frequency = row.grooming_frequency_value),
-                  (hypoallergenic = row.hypoallergenic),
-                  (score = row.score)
-                );
-                document.getElementById("answer-box").appendChild(tempDiv);
-              })
+              console.log("row: ", row);
+              let tempDiv = document.createElement("div");
+              tempDiv.innerHTML = answerBoxTemplate(
+                (breed_name = row.breed_name),
+                (img = row.img),
+                (trainability = row.trainability_value),
+                (weight = row.max_weight),
+                (height = row.max_height),
+                (description = row.descript1),
+                (temperament2 = row.temperament2),
+                (energy_level = row.energy_level_value),
+                (grooming_frequency = row.grooming_frequency_value),
+                (hypoallergenic = row.hypoallergenic),
+                (score = row.score)
+              );
+              document.getElementById("answer-box").appendChild(tempDiv);
+            })
         );
     }
 
@@ -255,6 +394,9 @@
               inp.value = this.getElementsByTagName("input")[0].value;
               /*close the list of autocompleted values,
               (or any other open lists of autocompleted values:*/
+
+              // ADD A TAG
+              addTag(inp.value);
               closeAllLists();
             });
             a.appendChild(b);
@@ -319,6 +461,7 @@
       });
     }
 
+    autocomplete(document.getElementById("traits_select"), personalities);
     autocomplete(document.getElementById("trait1_select"), personalities);
     autocomplete(document.getElementById("trait2_select"), personalities);
     autocomplete(document.getElementById("trait3_select"), personalities);
@@ -385,5 +528,114 @@
     /*when navigating through the items using the arrow keys:*/
     background-color: DodgerBlue !important;
     color: #ffffff;
+  }
+
+  /* Import Google Font - Poppins */
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+  }
+
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    /* background: #5372F0; */
+  }
+
+  ::selection {
+    color: #fff;
+    /* background: #5372F0; */
+  }
+
+  .wrapper {
+    width: 496px;
+    background: #fff;
+    border-radius: 10px;
+    padding: 18px 25px 20px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.06);
+  }
+
+  .wrapper :where(.title, li, li i, .details) {
+    display: flex;
+    align-items: center;
+  }
+
+  .title img {
+    max-width: 21px;
+  }
+
+  .title h2 {
+    font-size: 21px;
+    font-weight: 600;
+    margin-left: 8px;
+  }
+
+  .wrapper .content {
+    margin: 10px 0;
+  }
+
+  .content p {
+    font-size: 15px;
+  }
+
+  .content ul {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 7px;
+    margin: 12px 0;
+    border-radius: 5px;
+    border: 1px solid #a6a6a6;
+  }
+
+  .content ul li {
+    color: #333;
+    margin: 4px 3px;
+    list-style: none;
+    border-radius: 5px;
+    background: #F2F2F2;
+    padding: 5px 8px 5px 10px;
+    border: 1px solid #e3e1e1;
+  }
+
+  .content ul li i {
+    height: 20px;
+    width: 20px;
+    color: #808080;
+    margin-left: 8px;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 50%;
+    background: #dfdfdf;
+    justify-content: center;
+  }
+
+  .content ul input {
+    flex: 1;
+    padding: 5px;
+    border: none;
+    outline: none;
+    font-size: 16px;
+  }
+
+  .wrapper .details {
+    justify-content: space-between;
+  }
+
+  .details button {
+    border: none;
+    outline: none;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 9px 15px;
+    border-radius: 5px;
+    /* background: #5372F0; */
+    transition: background 0.3s ease;
   }
 </style>
