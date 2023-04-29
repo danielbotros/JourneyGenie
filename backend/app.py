@@ -76,12 +76,30 @@ def dog_search():
 
     time = request.args.get("time")
     space = request.args.get("space")
-    trait1 = request.args.get("trait1")
-    trait2 = request.args.get("trait2")
-    trait3 = request.args.get("trait3")
+    traits = request.args.get("traits")
+
+    traits = traits.split(",")
+
+    print("traits: ",traits)
+
     # TODO: make sure same trait not inputted twice
-    query = trait1 + " " + trait2 + " " + trait3
-    empty_query = trait1 == "" and trait2 == "" and trait3 == ""
+
+    query = ""
+    empty_query = True
+    for i in range(0,len(traits)):
+        if(i != len(traits) - 1):
+            query += traits[i] + " "
+        else:
+            query += traits[i]
+
+    print("query",query)
+
+    # query = trait1 + " " + trait2 + " " + trait3
+    if(len(traits) != 0):
+        empty_query = False
+
+    # query = trait1 + " " + trait2 + " " + trait3
+    # empty_query = trait1 == "" and trait2 == "" and trait3 == ""
 
     # print("Using SVD:")
     index_search_results = svd(query)  # [(breed, score), ...]
