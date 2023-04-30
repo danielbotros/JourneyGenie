@@ -14,7 +14,7 @@ from sklearn.preprocessing import normalize
 os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..", os.curdir))
 
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = ""
+MYSQL_USER_PASSWORD = "perfectpup_4300!"
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "dogdb"
 INDEX_TO_BREED = {}
@@ -80,19 +80,19 @@ def dog_search():
 
     traits = traits.split(",")
 
-    print("traits: ",traits)
+    print("traits: ", traits)
 
     # TODO: make sure same trait not inputted twice
 
     query = ""
     empty_query = True
-    for i in range(0,len(traits)):
+    for i in range(0, len(traits)):
         if(i != len(traits) - 1):
             query += traits[i] + " "
         else:
             query += traits[i]
 
-    print("query",query)
+    print("query", query)
 
     # query = trait1 + " " + trait2 + " " + trait3
     if(len(traits) != 0):
@@ -146,15 +146,18 @@ def dog_search():
     if (not empty_query):
         dict_res = dict(index_search_breeds)
         for (breed, breed_score) in index_search_breeds:
+            print("breed: ", breed, " score: ", breed_score)
 
             score = (abs(breed_score)/max_score)*50
+            score = min(50, score)
 
             if breed in direct_search_results:
-                #print("breed in both: ", breed, " score: ", score)
+                print("breed in both: ", breed, " score: ", score)
 
                 score += 50
 
-            dict_res[breed] = min(score, 100)
+            #dict_res[breed] = min(score, 100)
+            dict_res[breed] = score
 
         # print("dict res: ", dict_res)
         for i, breed_result in enumerate(res):
