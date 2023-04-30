@@ -49,7 +49,7 @@ CREATE TABLE `breeds` (
   `trainability_category` varchar(15) DEFAULT NULL,
   `demeanor_value` float DEFAULT NULL,
   `demeanor_category` varchar(23) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
