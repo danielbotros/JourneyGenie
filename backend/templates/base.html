@@ -14,7 +14,6 @@
         <h3>Describe your ideal dog</h3>
 
         <div>
-
           <head>
             <link rel="stylesheet" href="style.css">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -33,7 +32,7 @@
             <div class="details">
               <p><span></span></p>
             </div>
-            <script src="script.js"></script>
+            <!-- <script src="script.js"></script> -->
           </div>
         </div>
 
@@ -224,6 +223,7 @@
       } else if (e.keyCode == 13) {
         /*If the ENTER key is pressed, prevent the form from being submitted,*/
         e.preventDefault();
+        closeAllLists();
         if (currentFocus > -1) {
           /*and simulate a click on the "active" item:*/
           if (x) x[currentFocus].click();
@@ -267,6 +267,7 @@
   }
 
   autocomplete(document.getElementById("traits_select"), personalities);
+
   const ul = document.querySelector("ul"),
     input = document.querySelector("input"),
     tagNumb = document.querySelector(".details span");
@@ -310,14 +311,21 @@
       }
       e.target.value = "";
     }
+    else if (typeof e === 'string' || e instanceof String) {
+      let tag = e
+      if (tag.length > 1 && !tags.includes(tag)) {
+        if (tags.length < 10) {
+          tag.split(',').forEach(tag => {
+            tags.push(tag);
+            createTag();
+          });
+        }
+      }
+      document.getElementById("traits_select").value = "";
+    }
   }
+
   input.addEventListener("keyup", addTag);
-  const removeBtn = document.querySelector(".details button");
-  removeBtn.addEventListener("click", () => {
-    tags.length = 0;
-    ul.querySelectorAll("li").forEach(li => li.remove());
-    countTags();
-  });
 </script>
 
 <style>
@@ -398,9 +406,9 @@
     min-height: 100vh;
   } */
 
-  ::selection {
+  /* ::selection {
     color: #fff;
-  }
+  } */
 
   /* .wrapper {
     width: 496px;
@@ -449,7 +457,7 @@
     border-radius: 5px;
     background: #F2F2F2;
     padding: 5px 8px 5px 10px;
-    border: 1px solid #e3e1e1;
+    /* border: 1px solid #e3e1e1; */
   }
 
   .content ul li i {
@@ -460,7 +468,7 @@
     font-size: 12px;
     cursor: pointer;
     border-radius: 50%;
-    background: #dfdfdf;
+    /* background: #dfdfdf; */
     justify-content: center;
   }
 
@@ -480,7 +488,7 @@
   .details button {
     border: none;
     outline: none;
-    color: #fff;
+    /* color: #fff; */
     font-size: 14px;
     cursor: pointer;
     padding: 9px 15px;
