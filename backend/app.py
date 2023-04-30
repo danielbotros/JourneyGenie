@@ -14,7 +14,7 @@ from sklearn.preprocessing import normalize
 os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..", os.curdir))
 
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = "perfectpup_4300!"
+MYSQL_USER_PASSWORD = ""
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "dogdb"
 INDEX_TO_BREED = {}
@@ -74,6 +74,7 @@ def dog_search():
     print("request: ", request)
     # TODO: how to weigh traits more/less
 
+    hypoallergenic = request.args.get("hypoallergenic")
     time = request.args.get("time")
     space = request.args.get("space")
     traits = request.args.get("traits")
@@ -105,12 +106,14 @@ def dog_search():
 
     # print("Using SVD:")
     index_search_results = svd(query)  # [(breed, score), ...]
-    direct_search_results = direct_search(time, space)  # [breed1, breed2, ...]
+    direct_search_results = direct_search(
+        time, space, hypoallergenic)  # [breed1, breed2, ...]
     # merged direct + index w/h scores [((breed,), score), (...)]
     index_search_breeds = []
 
     combined_breeds = []
-    print("trait: ", query, " time: ", time, " space: ", space)
+    print("trait: ", query, " time: ", time, " space: ",
+          space, " hypoallergenic: ", hypoallergenic)
     if (not empty_query):
         index_search_breeds = merge_results(
             direct_search_results, index_search_results)
@@ -207,23 +210,30 @@ def merge_results(direct_results, index_results):
     return result[: 20]  # 20?
 
 
-def direct_search(time, space):
+def direct_search(time, space, hypoallergenic):
     time_values = compute_time(time)
     space_values = compute_space(space)
+    hypo_values = compute_hypo(hypoallergenic)
     query_sql = f"""SELECT breed_name
     FROM breeds
     WHERE max_height <= {space_values[0]}
     AND max_weight <= {space_values[1]}
-
     AND energy_level_value <= {time_values[0]}
     AND grooming_frequency_value <= {time_values[1]}
     AND trainability_value >= {time_values[2]}
-
+    AND hypoallergenic = {hypo_values[0]} OR hypoallergenic = {hypo_values[1]} 
     """
     data = mysql_engine.query_selector(query_sql)
     data = list(data)
     # print("direct search results: ", data)
     return data
+
+
+def compute_hypo(hypo):
+    if hypo == "Yes":
+        return ["'Hypoallergenic: Yes'", "'Hypoallergenic: Yes'"]
+    elif hypo == "No":
+        return ["'Hypoallergenic: Yes'", "'Hypoallergenic: No'"]
 
 
 def compute_space(space):
