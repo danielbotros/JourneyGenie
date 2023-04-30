@@ -93,9 +93,11 @@ def dog_search():
             query += traits[i]
 
     print("query", query)
+    print(len(traits))
 
     # query = trait1 + " " + trait2 + " " + trait3
-    if(len(traits) != 0):
+    if(len(query) != 0):
+        print("has traits")
         empty_query = False
 
     # query = trait1 + " " + trait2 + " " + trait3
@@ -141,12 +143,12 @@ def dog_search():
     # print("result: ", res)
     # print(type(res))
     direct_search_results = [x[0] for x in direct_search_results]
-    #print("direct results: ", direct_search_results)
+    print("direct results: ", direct_search_results)
     max_score = 0.2
     if (not empty_query):
         dict_res = dict(index_search_breeds)
         for (breed, breed_score) in index_search_breeds:
-            print("breed: ", breed, " score: ", breed_score)
+            #print("breed: ", breed, " score: ", breed_score)
 
             score = (abs(breed_score)/max_score)*50
             score = min(50, score)
@@ -166,6 +168,7 @@ def dog_search():
             print("breed: ", breed_result['breed_name'],
                   " score: ", dict_res[breed_result["breed_name"]])
     else:
+        print("empty traits")
         for i, breed_result in enumerate(res):
             res[i]["score"] = 100
             print("breed: ", breed_result['breed_name'],
