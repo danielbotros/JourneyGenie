@@ -42,10 +42,8 @@ def index_to_breed():
 def svd(query):
     text = get_data()
     index_to_breed()
-    # print("text: ", text)
-    # TODO: make vectorizer global variable to speed up app
     vectorizer = TfidfVectorizer(
-        stop_words='english', smooth_idf=True)  # TODO: add df?
+        stop_words='english', smooth_idf=True)
     input_matrix = vectorizer.fit_transform(text)
     query_vector = vectorizer.transform(
         [query]).toarray().T
@@ -57,9 +55,7 @@ def svd(query):
     index_search_results = []
 
     for i, score in cossim_with_svd(query_vector, docs_compressed_normed, v_trans, k=30):
-        # print("breed: ", INDEX_TO_BREED[i], " score: ", score)
         index_search_results.append((INDEX_TO_BREED[i], score))
-    # print()
     return index_search_results
 
 
@@ -81,7 +77,6 @@ def dog_search():
     traits = traits.split(",")
 
     print("traits: ", traits)
-
     query = ""
     empty_query = True
     for i in range(0, len(traits)):
@@ -91,37 +86,32 @@ def dog_search():
             query += traits[i]
 
     print("query", query)
-    print(len(traits))
 
     if(len(query) != 0):
-        print("has traits")
         empty_query = False
 
     index_search_results = svd(query)  # [(breed, score), ...]
     direct_search_results = direct_search(
         time, space, hypoallergenic)  # [breed1, breed2, ...]
     # merged direct + index w/h scores [((breed,), score), (...)]
-    index_search_breeds = []
 
+    index_search_breeds = []
     combined_breeds = []
     print("trait: ", query, " time: ", time, " space: ",
           space, " hypoallergenic: ", hypoallergenic)
+
     if (not empty_query):
         index_search_breeds = merge_results(
             direct_search_results, index_search_results)
 
         combined_breeds = [x[0] for x in index_search_breeds]
-
     else:
         print("no trait input query: ")
         for res in direct_search_results:
             combined_breeds.append(res)  # no score
         combined_breeds = [x[0] for x in combined_breeds]
 
-    # print("index_search_breeds", index_search_breeds)
     results = tuple(combined_breeds)
-    # print("combined breeds: ", combined_breeds)
-
     # print("results: ", results)
 
     all_data = []
@@ -137,6 +127,7 @@ def dog_search():
     res = json.loads(res)
     direct_search_results = [x[0] for x in direct_search_results]
     print("direct results: ", direct_search_results)
+
     divide = False
     max_score = 0.2
     index = 500
@@ -144,16 +135,12 @@ def dog_search():
         dict_res = dict(index_search_breeds)
         for i, (breed, breed_score) in enumerate(index_search_breeds):
             # print("breed: ", breed, " score: ", breed_score)
-
             score = (abs(breed_score)/max_score)*100
             score = min(100, score)
-
             if not divide and breed not in direct_search_results:
                 divide = True
                 index = i
-
             dict_res[breed] = score
-
         for i, breed_result in enumerate(res):
             res[i]["score"] = round(dict_res[breed_result["breed_name"]], 0)
             if index == i:
@@ -177,6 +164,7 @@ def merge_results(direct_results, index_results):
     matches = []
     index_search_breeds = [x[0][0] for x in index_results]
     dict_res = {}
+
     for (breed, score) in index_results:
         dict_res[breed[0]] = score
 
@@ -187,6 +175,7 @@ def merge_results(direct_results, index_results):
     for res in index_search_breeds:
         if (res not in dir):
             matches.append(res)
+
     result = []
     for breed in matches:
         result.append((breed, dict_res[breed]))
@@ -290,7 +279,7 @@ def cossim_with_svd(query_vector, docs, v_trans, k=5):
 
 def format_breeds(raw_results):
     results = []
-    for score, id in raw_results[:50]:
+    for id in raw_results[:50]:
         results.append(INDEX_TO_BREED[id])
     return results
 
