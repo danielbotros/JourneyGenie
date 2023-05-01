@@ -188,8 +188,6 @@ select{
 #bigdog {
     margin:auto;
     font-size: 30px;
-    margin-left: 180px;
-    margin-right: 180px;
     color:darksalmon;
 }
 
@@ -225,8 +223,7 @@ select{
 #answer-box{
     margin-top: 20px;
     display:flex;
-    flex-direction: row;
-    flex-wrap: wrap;
+    flex-direction: column;
     flex: 1;
     justify-content: space-evenly;
 }
@@ -235,8 +232,7 @@ select{
     padding: 10px;
     border: 2px solid #ddaa76;
     border-radius: 20px;
-    margin-right: 10px;
-    margin-left: 24px;
+    margin: auto;
     margin-bottom:32px;
     box-shadow:#f5eadc 8px 8px 0 0;
 }
