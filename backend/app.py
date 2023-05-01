@@ -14,7 +14,7 @@ from sklearn.preprocessing import normalize
 os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..", os.curdir))
 
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = ""
+MYSQL_USER_PASSWORD = "perfectpup_4300!"
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "dogdb"
 INDEX_TO_BREED = {}
@@ -72,7 +72,6 @@ def home():
 def dog_search():
     index_to_breed()
     print("request: ", request)
-    # TODO: how to weigh traits more/less
 
     hypoallergenic = request.args.get("hypoallergenic")
     time = request.args.get("time")
@@ -82,8 +81,6 @@ def dog_search():
     traits = traits.split(",")
 
     print("traits: ", traits)
-
-    # TODO: make sure same trait not inputted twice
 
     query = ""
     empty_query = True
@@ -96,15 +93,10 @@ def dog_search():
     print("query", query)
     print(len(traits))
 
-    # query = trait1 + " " + trait2 + " " + trait3
     if(len(query) != 0):
         print("has traits")
         empty_query = False
 
-    # query = trait1 + " " + trait2 + " " + trait3
-    # empty_query = trait1 == "" and trait2 == "" and trait3 == ""
-
-    # print("Using SVD:")
     index_search_results = svd(query)  # [(breed, score), ...]
     direct_search_results = direct_search(
         time, space, hypoallergenic)  # [breed1, breed2, ...]
@@ -134,49 +126,49 @@ def dog_search():
 
     all_data = []
     for i in range(len(results)):
-        query_sql = f"""SELECT breed_name, img, trainability_value, max_weight, max_height, descript1, temperament2,
-    energy_level_value, grooming_frequency_value, hypoallergenic FROM breeds WHERE breed_name = '{str(results[i])}'"""
+        query_sql = f"""SELECT breed_name, img, trainability_category, max_weight, max_height, descript1, temperament2,
+    energy_level_category, grooming_frequency_category, hypoallergenic FROM breeds WHERE breed_name = '{str(results[i])}'"""
         all_data.append(list(mysql_engine.query_selector(query_sql))[0])
 
-    keys = ["breed_name", "img", "trainability_value", "max_weight", "max_height", "descript1", "temperament2", "energy_level_value",
-            "grooming_frequency_value",  "hypoallergenic"]
+    keys = ["breed_name", "img", "trainability_category", "max_weight", "max_height", "descript1", "temperament2", "energy_level_category",
+            "grooming_frequency_category",  "hypoallergenic"]
 
     res = json.dumps([dict(zip(keys, i)) for i in all_data])
     res = json.loads(res)
-    # print("result: ", res)
-    # print(type(res))
     direct_search_results = [x[0] for x in direct_search_results]
     print("direct results: ", direct_search_results)
+    divide = False
     max_score = 0.2
     if (not empty_query):
         dict_res = dict(index_search_breeds)
-        for (breed, breed_score) in index_search_breeds:
-            #print("breed: ", breed, " score: ", breed_score)
+        for i, (breed, breed_score) in enumerate(index_search_breeds):
+            # print("breed: ", breed, " score: ", breed_score)
 
-            score = (abs(breed_score)/max_score)*50
-            score = min(50, score)
+            score = (abs(breed_score)/max_score)*100
+            score = min(100, score)
 
-            if breed in direct_search_results:
-                print("breed in both: ", breed, " score: ", score)
+            if not divide and breed not in direct_search_results:
+                divide = True
+                index = i
 
-                score += 50
-
-            #dict_res[breed] = min(score, 100)
             dict_res[breed] = score
 
-        # print("dict res: ", dict_res)
         for i, breed_result in enumerate(res):
-            # print("res: ", breed_result)
             res[i]["score"] = round(dict_res[breed_result["breed_name"]], 0)
+            if index == i:
+                res[i]["divider"] = True
+            else:
+                res[i]["divider"] = False
             print("breed: ", breed_result['breed_name'],
                   " score: ", dict_res[breed_result["breed_name"]])
     else:
         print("empty traits")
         for i, breed_result in enumerate(res):
             res[i]["score"] = 100
+            res[i]["divider"] = False
             print("breed: ", breed_result['breed_name'],
                   " score: ", res[i]["score"])
-    # print("final results: ", res)
+    print("final results: ", res)
     return res
 
 
@@ -187,27 +179,18 @@ def merge_results(direct_results, index_results):
     for (breed, score) in index_results:
         dict_res[breed[0]] = score
 
-    # print("dictionary: ", dict_res)
-
     dir = [x[0] for x in direct_results]
-    # print("direct results: ", dir)
     ind = index_search_breeds
-    # print("index search: ", ind)
     matches = [x for x in ind if x in dir]
-
-    # print("matches ", (matches))
 
     for res in index_search_breeds:
         if (res not in dir):
             matches.append(res)
     result = []
     for breed in matches:
-        # print("breed: ", breed)
         result.append((breed, dict_res[breed]))
 
-    # print("matches: ", result[:20])
-
-    return result[: 20]  # 20?
+    return result[: 40]  # 20?
 
 
 def direct_search(time, space, hypoallergenic):
@@ -221,11 +204,11 @@ def direct_search(time, space, hypoallergenic):
     AND energy_level_value <= {time_values[0]}
     AND grooming_frequency_value <= {time_values[1]}
     AND trainability_value >= {time_values[2]}
-    AND hypoallergenic = {hypo_values[0]} OR hypoallergenic = {hypo_values[1]} 
+    AND (hypoallergenic = {hypo_values[0]} OR hypoallergenic = {hypo_values[1]})
     """
     data = mysql_engine.query_selector(query_sql)
     data = list(data)
-    # print("direct search results: ", data)
+    print("direct search results len: ", len(data))
     return data
 
 
@@ -261,22 +244,6 @@ def tokenize(text):
         return [x for x in re.findall(r"[a-z]+", text.lower())]
     else:
         return []
-
-
-# def preprocess():
-
-#     query_sql = f"""SELECT descript1, temperament1, descript2, temperament2 FROM breeds"""
-#     data = mysql_engine.query_selector(query_sql)
-#     cleaned_data = []
-#     for descript1, temperament1, descript2, temperament2 in list(data):
-#         breed_data = []
-#         breed_data.append(tokenize(descript1))
-#         breed_data.append(tokenize(temperament1))
-#         breed_data.append(tokenize(descript2))
-#         breed_data.append(tokenize(temperament2))
-#         breed_data = [item for sublist in breed_data for item in sublist]
-#         cleaned_data.append(breed_data)
-#     return cleaned_data
 
 
 def get_data():
@@ -317,7 +284,6 @@ def cossim_with_svd(query_vector, docs, v_trans, k=5):
 
     asort = sorted(sims_with_index, key=lambda t: t[1])
     results = asort[:k+1]
-    # print("vossim results: ", results)
     return results
 
 
@@ -328,4 +294,4 @@ def format_breeds(raw_results):
     return results
 
 
-# app.run(debug=True)
+app.run(debug=True)

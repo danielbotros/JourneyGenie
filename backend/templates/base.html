@@ -1253,12 +1253,15 @@
     energy_level,
     grooming_frequency,
     hypoallergenic,
-    score
+    score, 
+    divider
   ) {
     return `
+    ${divider? `<h3> Non-Lifestyle Matches </h3>` : `<h6></h6>`}
         <div class="block">
           <div class = "row">
             <div class="percent">
+              <tru
                 <h2>${score}% Match</h2>
               </div>
             <img src=${img} width="30%" height="30%">
@@ -1313,15 +1316,16 @@
               tempDiv.innerHTML = answerBoxTemplate(
                 (breed_name = row.breed_name),
                 (img = row.img),
-                (trainability = row.trainability_value),
+                (trainability = row.trainability_category),
                 (weight = row.max_weight),
                 (height = row.max_height),
                 (description = row.descript1),
                 (temperament2 = row.temperament2),
-                (energy_level = row.energy_level_value),
-                (grooming_frequency = row.grooming_frequency_value),
+                (energy_level = row.energy_level_category),
+                (grooming_frequency = row.grooming_frequency_category),
                 (hypoallergenic = row.hypoallergenic),
-                (score = row.score)
+                (score = row.score),
+                (divider = row.divider),
               );
               document.getElementById("answer-box").appendChild(tempDiv);
             })
