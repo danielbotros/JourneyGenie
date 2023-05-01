@@ -14,14 +14,10 @@ from sklearn.preprocessing import normalize
 os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..", os.curdir))
 
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = "perfectpup_4300!"
+MYSQL_USER_PASSWORD = "admin123"
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "dogdb"
 INDEX_TO_BREED = {}
-QUERY_VECTOR = []
-DOCS_COMPRESSED_NORMED = []
-V_TRANS = []
-
 
 mysql_engine = MySQLDatabaseHandler(
     MYSQL_USER, MYSQL_USER_PASSWORD, MYSQL_PORT, MYSQL_DATABASE)
@@ -30,33 +26,6 @@ mysql_engine.load_file_into_db()
 
 app = Flask(__name__)
 CORS(app)
-
-
-def index_to_breed():
-    query_sql = f"""SELECT breed_name FROM breeds"""
-    breeds = mysql_engine.query_selector(query_sql)
-    for i, breed in enumerate(breeds):
-        INDEX_TO_BREED[i] = breed
-
-
-def svd(query):
-    text = get_data()
-    index_to_breed()
-    vectorizer = TfidfVectorizer(
-        stop_words='english', smooth_idf=True)
-    input_matrix = vectorizer.fit_transform(text)
-    query_vector = vectorizer.transform(
-        [query]).toarray().T
-
-    u, s, v_trans = svds(input_matrix, k=40)
-
-    docs_compressed = u
-    docs_compressed_normed = normalize(docs_compressed)
-    index_search_results = []
-
-    for i, score in cossim_with_svd(query_vector, docs_compressed_normed, v_trans, k=30):
-        index_search_results.append((INDEX_TO_BREED[i], score))
-    return index_search_results
 
 
 @ app.route("/")
@@ -80,14 +49,14 @@ def dog_search():
     query = ""
     empty_query = True
     for i in range(0, len(traits)):
-        if(i != len(traits) - 1):
+        if (i != len(traits) - 1):
             query += traits[i] + " "
         else:
             query += traits[i]
 
     print("query", query)
 
-    if(len(query) != 0):
+    if (len(query) != 0):
         empty_query = False
 
     index_search_results = svd(query)  # [(breed, score), ...]
@@ -156,8 +125,15 @@ def dog_search():
             res[i]["divider"] = False
             print("breed: ", breed_result['breed_name'],
                   " score: ", res[i]["score"])
-    #print("final results: ", res)
+    # print("final results: ", res)
     return res
+
+
+def index_to_breed():
+    query_sql = f"""SELECT breed_name FROM breeds"""
+    breeds = mysql_engine.query_selector(query_sql)
+    for i, breed in enumerate(breeds):
+        INDEX_TO_BREED[i] = breed
 
 
 def merge_results(direct_results, index_results):
@@ -181,25 +157,6 @@ def merge_results(direct_results, index_results):
         result.append((breed, dict_res[breed]))
 
     return result[: 40]  # 20?
-
-
-def direct_search(time, space, hypoallergenic):
-    time_values = compute_time(time)
-    space_values = compute_space(space)
-    hypo_values = compute_hypo(hypoallergenic)
-    query_sql = f"""SELECT breed_name
-    FROM breeds
-    WHERE max_height <= {space_values[0]}
-    AND max_weight <= {space_values[1]}
-    AND energy_level_value <= {time_values[0]}
-    AND grooming_frequency_value <= {time_values[1]}
-    AND trainability_value >= {time_values[2]}
-    AND (hypoallergenic = {hypo_values[0]} OR hypoallergenic = {hypo_values[1]})
-    """
-    data = mysql_engine.query_selector(query_sql)
-    data = list(data)
-    print("direct search results len: ", len(data))
-    return data
 
 
 def compute_hypo(hypo):
@@ -229,11 +186,23 @@ def compute_time(time):
         return [999, 999, 0]
 
 
-def tokenize(text):
-    if text != None:
-        return [x for x in re.findall(r"[a-z]+", text.lower())]
-    else:
-        return []
+def direct_search(time, space, hypoallergenic):
+    time_values = compute_time(time)
+    space_values = compute_space(space)
+    hypo_values = compute_hypo(hypoallergenic)
+    query_sql = f"""SELECT breed_name
+    FROM breeds
+    WHERE max_height <= {space_values[0]}
+    AND max_weight <= {space_values[1]}
+    AND energy_level_value <= {time_values[0]}
+    AND grooming_frequency_value <= {time_values[1]}
+    AND trainability_value >= {time_values[2]}
+    AND (hypoallergenic = {hypo_values[0]} OR hypoallergenic = {hypo_values[1]})
+    """
+    data = mysql_engine.query_selector(query_sql)
+    data = list(data)
+    print("direct search results len: ", len(data))
+    return data
 
 
 def get_data():
@@ -263,7 +232,28 @@ def get_data():
     return descript_temp_list
 
 
+def svd(query):
+    text = get_data()
+    index_to_breed()
+    vectorizer = TfidfVectorizer(
+        stop_words='english', smooth_idf=True)
+    input_matrix = vectorizer.fit_transform(text)
+    query_vector = vectorizer.transform(
+        [query]).toarray().T
+
+    u, s, v_trans = svds(input_matrix, k=40)
+
+    docs_compressed = u
+    docs_compressed_normed = normalize(docs_compressed)
+    index_search_results = []
+
+    for i, score in cossim_with_svd(query_vector, docs_compressed_normed, v_trans, k=30):
+        index_search_results.append((INDEX_TO_BREED[i], score))
+    return index_search_results
+
 # cosine similarity between vectorized query + U matrix
+
+
 def cossim_with_svd(query_vector, docs, v_trans, k=5):
     query_vector = v_trans.dot(query_vector)
     sims = docs.dot(query_vector)
@@ -274,13 +264,6 @@ def cossim_with_svd(query_vector, docs, v_trans, k=5):
 
     asort = sorted(sims_with_index, key=lambda t: t[1])
     results = asort[:k+1]
-    return results
-
-
-def format_breeds(raw_results):
-    results = []
-    for id in raw_results[:50]:
-        results.append(INDEX_TO_BREED[id])
     return results
 
 
