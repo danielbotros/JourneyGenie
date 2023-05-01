@@ -98,7 +98,7 @@ def dog_search():
     print("direct results: ", direct_search_results)
 
     divide = False
-    max_score = 0.2
+    max_score = 0.1
     index = 500
     if (not empty_query):
         dict_res = dict(index_search_breeds)
