@@ -14,7 +14,7 @@ from sklearn.preprocessing import normalize
 os.environ['ROOT_PATH'] = os.path.abspath(os.path.join("..", os.curdir))
 
 MYSQL_USER = "root"
-MYSQL_USER_PASSWORD = "admin123"
+MYSQL_USER_PASSWORD = ""
 MYSQL_PORT = 3306
 MYSQL_DATABASE = "dogdb"
 INDEX_TO_BREED = {}
@@ -161,9 +161,9 @@ def merge_results(direct_results, index_results):
 
 def compute_hypo(hypo):
     if hypo == "Yes":
-        return ["'Hypoallergenic: Yes'", "'Hypoallergenic: Yes'"]
+        return ["'Yes'", "'Yes'"]
     elif hypo == "No":
-        return ["'Hypoallergenic: Yes'", "'Hypoallergenic: No'"]
+        return ["'Yes'", "'No'"]
 
 
 def compute_space(space):
