@@ -267,4 +267,4 @@ def cossim_with_svd(query_vector, docs, v_trans, k=5):
     return results
 
 
-# app.run(debug=True)
+app.run(debug=True)

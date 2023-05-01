@@ -1265,7 +1265,11 @@
     divider
   ) {
     return `
-    ${divider ? `<h3 id="lifestyle"> Non-Lifestyle Matches </h3>` : `<h6></h6>`}
+    ${
+      divider
+        ? `<h3 id="lifestyle"> Non-Lifestyle Matches but Description Matches</h3>`
+        : `<h6></h6>`
+    }
         <div class="block">
           <div class = "row">
             <div class="percent">
