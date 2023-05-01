@@ -139,6 +139,7 @@ def dog_search():
     print("direct results: ", direct_search_results)
     divide = False
     max_score = 0.2
+    index = 500
     if (not empty_query):
         dict_res = dict(index_search_breeds)
         for i, (breed, breed_score) in enumerate(index_search_breeds):
@@ -168,7 +169,7 @@ def dog_search():
             res[i]["divider"] = False
             print("breed: ", breed_result['breed_name'],
                   " score: ", res[i]["score"])
-    print("final results: ", res)
+    #print("final results: ", res)
     return res
 
 
